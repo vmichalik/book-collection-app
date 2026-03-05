@@ -15,59 +15,61 @@ export function BookCard({ book, onClick, index = 0 }: BookCardProps) {
   return (
     <motion.div
       layoutId={`book-card-${book.id}`}
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       transition={{
-        type: 'spring',
-        stiffness: 400,
-        damping: 30,
-        delay: index * 0.05,
+        duration: 0.5,
+        delay: index * 0.08,
+        ease: [0.25, 0.1, 0.25, 1],
       }}
-      whileTap={{ scale: 0.98 }}
       onClick={onClick}
-      className="cursor-pointer group"
+      className="group cursor-pointer"
     >
-      {/* Card Container */}
-      <div className="relative bg-white/[0.04] rounded-2xl overflow-hidden border border-white/[0.06] transition-all duration-300 hover:bg-white/[0.06] hover:border-white/[0.10]">
+      {/* Book Cover Container */}
+      <div className="relative aspect-[2/3] mb-4 overflow-hidden bg-[#e8e4dc] rounded-sm shadow-[0_2px_8px_rgba(0,0,0,0.06)] group-hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] transition-shadow duration-500">
+        {/* Loading State */}
+        {!imageLoaded && !imageError && (
+          <div className="absolute inset-0 bg-[#e8e4dc] animate-pulse" />
+        )}
+        
         {/* Book Cover Image */}
-        <div className="relative aspect-[2/3] w-full overflow-hidden bg-black/20">
-          {!imageLoaded && !imageError && (
-            <div className="absolute inset-0 bg-white/[0.05] animate-pulse" />
-          )}
-          
-          {book.coverImage && !imageError ? (
-            <img
-              src={book.coverImage}
-              alt={book.title}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-              onLoad={() => setImageLoaded(true)}
-              onError={() => setImageError(true)}
-              style={{ opacity: imageLoaded ? 1 : 0 }}
-            />
-          ) : (
-            <div 
-              className="w-full h-full flex flex-col items-center justify-center p-4 text-center"
-              style={{ background: book.spineColor || '#1a1a2e' }}
-            >
-              <p className="text-white font-semibold text-sm leading-snug line-clamp-3">{book.title}</p>
-              <p className="text-white/60 text-xs mt-2">{book.author}</p>
-            </div>
-          )}
-          
-          {/* Gradient overlay at bottom */}
-          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/60 to-transparent" />
-        </div>
+        {book.coverImage && !imageError ? (
+          <img
+            src={book.coverImage}
+            alt={book.title}
+            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            onLoad={() => setImageLoaded(true)}
+            onError={() => setImageError(true)}
+            style={{ opacity: imageLoaded ? 1 : 0 }}
+          />
+        ) : (
+          /* Fallback Cover */
+          <div 
+            className="w-full h-full flex flex-col items-center justify-center p-6 text-center"
+            style={{ background: book.spineColor || '#8b7355' }}
+          >
+            <p className="font-serif text-white text-lg leading-snug line-clamp-3">
+              {book.title}
+            </p>
+            <p className="text-white/70 text-xs mt-2 font-light tracking-wide uppercase">
+              {book.author}
+            </p>
+          </div>
+        )}
 
-        {/* Book Info - positioned over the gradient */}
-        <div className="absolute bottom-0 left-0 right-0 p-4">
-          <h3 className="font-semibold text-white text-[15px] leading-snug line-clamp-2 drop-shadow-lg">
-            {book.title}
-          </h3>
-          <p className="text-white/70 text-[13px] mt-1 line-clamp-1">
-            {book.author}
-          </p>
-        </div>
+        {/* Subtle Overlay on Hover */}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/[0.02] transition-colors duration-500" />
+      </div>
+
+      {/* Book Info - Below Cover */}
+      <div className="space-y-1">
+        <h3 className="font-serif text-[17px] leading-snug text-[#1a1a1a] line-clamp-2 group-hover:text-[#8b7355] transition-colors duration-300">
+          {book.title}
+        </h3>
+        <p className="text-[13px] text-[#666666] font-light">
+          {book.author}
+        </p>
       </div>
     </motion.div>
   );

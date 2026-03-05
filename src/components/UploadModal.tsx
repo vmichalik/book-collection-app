@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Camera, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { X, Camera, Image as ImageIcon } from 'lucide-react';
 import type { BookFormData } from '../types/book';
 
 interface UploadModalProps {
@@ -12,7 +12,6 @@ interface UploadModalProps {
 export function UploadModal({ isOpen, onClose, onUpload }: UploadModalProps) {
   const [step, setStep] = useState<'photo' | 'details'>('photo');
   const [preview, setPreview] = useState<string | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
   const [formData, setFormData] = useState<BookFormData>({
     title: '',
     author: '',
@@ -32,12 +31,6 @@ export function UploadModal({ isOpen, onClose, onUpload }: UploadModalProps) {
       setPreview(result);
       setFormData(prev => ({ ...prev, coverImage: result }));
       setStep('details');
-      
-      // Simulate processing the image for book info
-      setIsProcessing(true);
-      setTimeout(() => {
-        setIsProcessing(false);
-      }, 1000);
     };
     reader.readAsDataURL(file);
   }, []);
@@ -72,7 +65,7 @@ export function UploadModal({ isOpen, onClose, onUpload }: UploadModalProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
           onClick={handleClose}
         >
           {/* Backdrop */}
@@ -80,62 +73,58 @@ export function UploadModal({ isOpen, onClose, onUpload }: UploadModalProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/30 backdrop-blur-sm"
           />
 
           {/* Modal */}
           <motion.div
-            initial={{ y: '100%', opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: '100%', opacity: 0 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="relative w-full max-w-md bg-[#1a1a1f] rounded-t-3xl sm:rounded-3xl overflow-hidden shadow-2xl"
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+            className="relative w-full max-w-lg bg-white rounded-lg shadow-2xl overflow-hidden"
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
-              <h2 className="text-lg font-semibold text-white">
-                {step === 'photo' ? 'Add Book' : 'Book Details'}
+            <div className="flex items-center justify-between px-8 py-6 border-b border-black/[0.06]">
+              <h2 className="font-serif text-2xl text-[#1a1a1a]">
+                {step === 'photo' ? 'Add Volume' : 'Details'}
               </h2>
               <button
                 onClick={handleClose}
-                className="p-2 rounded-full hover:bg-white/10 transition-colors"
+                className="p-2 text-[#999999] hover:text-[#1a1a1a] transition-colors"
               >
-                <X className="w-5 h-5 text-white/60" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Content */}
-            <div className="p-6 max-h-[70vh] overflow-y-auto">
+            <div className="p-8 max-h-[70vh] overflow-y-auto">
               {step === 'photo' ? (
-                <div className="space-y-4">
+                <div className="space-y-6">
                   {/* Photo upload options */}
                   <div className="grid grid-cols-2 gap-4">
                     {/* Camera option */}
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                    <button
                       onClick={() => cameraInputRef.current?.click()}
-                      className="flex flex-col items-center gap-3 p-8 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10 transition-all"
+                      className="flex flex-col items-center gap-4 p-8 rounded-lg border border-black/[0.08] hover:border-[#1a1a1a]/20 hover:bg-[#f7f5f2] transition-all group"
                     >
-                      <div className="w-14 h-14 rounded-full bg-violet-500/20 flex items-center justify-center">
-                        <Camera className="w-7 h-7 text-violet-400" />
+                      <div className="w-12 h-12 rounded-full bg-[#f0ede8] flex items-center justify-center group-hover:bg-[#e8e4dc] transition-colors">
+                        <Camera className="w-5 h-5 text-[#666666]" />
                       </div>
-                      <span className="text-white/80 text-sm font-medium">Take Photo</span>
-                    </motion.button>
+                      <span className="text-[#1a1a1a] text-sm font-medium">Camera</span>
+                    </button>
 
                     {/* Gallery option */}
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                    <button
                       onClick={() => fileInputRef.current?.click()}
-                      className="flex flex-col items-center gap-3 p-8 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10 transition-all"
+                      className="flex flex-col items-center gap-4 p-8 rounded-lg border border-black/[0.08] hover:border-[#1a1a1a]/20 hover:bg-[#f7f5f2] transition-all group"
                     >
-                      <div className="w-14 h-14 rounded-full bg-cyan-500/20 flex items-center justify-center">
-                        <ImageIcon className="w-7 h-7 text-cyan-400" />
+                      <div className="w-12 h-12 rounded-full bg-[#f0ede8] flex items-center justify-center group-hover:bg-[#e8e4dc] transition-colors">
+                        <ImageIcon className="w-5 h-5 text-[#666666]" />
                       </div>
-                      <span className="text-white/80 text-sm font-medium">From Gallery</span>
-                    </motion.button>
+                      <span className="text-[#1a1a1a] text-sm font-medium">Gallery</span>
+                    </button>
                   </div>
 
                   {/* Hidden inputs */}
@@ -155,37 +144,32 @@ export function UploadModal({ isOpen, onClose, onUpload }: UploadModalProps) {
                     className="hidden"
                   />
 
-                  <p className="text-center text-white/40 text-sm">
-                    Take a photo of your book cover or upload from your gallery
+                  <p className="text-center text-[#999999] text-sm font-light">
+                    Photograph the book cover to add to your collection
                   </p>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-6">
                   {/* Preview */}
                   <div className="flex justify-center">
                     <motion.div
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
                       className="relative"
                     >
                       {preview && (
                         <img
                           src={preview}
                           alt="Book preview"
-                          className="w-32 h-48 object-cover rounded-lg shadow-xl"
+                          className="w-28 h-40 object-cover rounded-sm shadow-lg"
                         />
-                      )}
-                      {isProcessing && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg">
-                          <Loader2 className="w-8 h-8 text-white animate-spin" />
-                        </div>
                       )}
                     </motion.div>
                   </div>
 
                   {/* Title */}
                   <div>
-                    <label className="block text-sm font-medium text-white/70 mb-2">
+                    <label className="block text-sm font-medium text-[#666666] mb-2">
                       Title
                     </label>
                     <input
@@ -193,14 +177,14 @@ export function UploadModal({ isOpen, onClose, onUpload }: UploadModalProps) {
                       value={formData.title}
                       onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
                       placeholder="Enter book title"
-                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-violet-500/50 transition-colors"
+                      className="w-full px-0 py-2 bg-transparent border-b border-black/[0.08] text-[#1a1a1a] placeholder:text-[#999999] focus:outline-none focus:border-[#1a1a1a]/30 transition-colors"
                       required
                     />
                   </div>
 
                   {/* Author */}
                   <div>
-                    <label className="block text-sm font-medium text-white/70 mb-2">
+                    <label className="block text-sm font-medium text-[#666666] mb-2">
                       Author
                     </label>
                     <input
@@ -208,21 +192,21 @@ export function UploadModal({ isOpen, onClose, onUpload }: UploadModalProps) {
                       value={formData.author}
                       onChange={e => setFormData(prev => ({ ...prev, author: e.target.value }))}
                       placeholder="Enter author name"
-                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-violet-500/50 transition-colors"
+                      className="w-full px-0 py-2 bg-transparent border-b border-black/[0.08] text-[#1a1a1a] placeholder:text-[#999999] focus:outline-none focus:border-[#1a1a1a]/30 transition-colors"
                     />
                   </div>
 
                   {/* Description */}
                   <div>
-                    <label className="block text-sm font-medium text-white/70 mb-2">
-                      Description
+                    <label className="block text-sm font-medium text-[#666666] mb-2">
+                      Notes
                     </label>
                     <textarea
                       value={formData.description}
                       onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                      placeholder="Add a brief description..."
+                      placeholder="Add notes about this volume..."
                       rows={3}
-                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-violet-500/50 transition-colors resize-none"
+                      className="w-full px-0 py-2 bg-transparent border-b border-black/[0.08] text-[#1a1a1a] placeholder:text-[#999999] focus:outline-none focus:border-[#1a1a1a]/30 transition-colors resize-none"
                     />
                   </div>
 
@@ -230,7 +214,7 @@ export function UploadModal({ isOpen, onClose, onUpload }: UploadModalProps) {
                   <button
                     type="button"
                     onClick={() => setStep('photo')}
-                    className="text-sm text-violet-400 hover:text-violet-300 transition-colors"
+                    className="text-sm text-[#8b7355] hover:text-[#6b5a42] transition-colors"
                   >
                     Change photo
                   </button>
@@ -240,7 +224,7 @@ export function UploadModal({ isOpen, onClose, onUpload }: UploadModalProps) {
                     type="submit"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="w-full py-4 bg-gradient-to-r from-violet-600 to-cyan-600 rounded-xl text-white font-semibold shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40 transition-shadow"
+                    className="w-full py-3 bg-[#1a1a1a] text-white rounded-full text-sm font-medium tracking-wide hover:bg-[#333333] transition-colors"
                   >
                     Add to Collection
                   </motion.button>

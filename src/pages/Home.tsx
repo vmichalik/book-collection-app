@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Search, Library } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { useBooks } from '../hooks/useBooks';
 import { BookCard } from '../components/BookCard';
 import { UploadModal } from '../components/UploadModal';
@@ -27,64 +27,63 @@ export function Home({ onBookSelect }: HomeProps) {
 
   if (!isLoaded) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0a0a0f]">
+      <div className="min-h-screen flex items-center justify-center bg-[#f7f5f2]">
         <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-          className="w-8 h-8 border-2 border-white/20 border-t-white/80 rounded-full"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="w-6 h-6 border border-[#1a1a1a]/20 border-t-[#1a1a1a] rounded-full animate-spin"
         />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] pb-32">
-      {/* Header */}
-      <header className="sticky top-0 z-10 bg-[#0a0a0f]/95 backdrop-blur-xl border-b border-white/[0.06]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4">
-          <div className="flex items-center justify-between gap-4">
+    <div className="min-h-screen bg-[#f7f5f2] pb-32">
+      {/* Elegant Header */}
+      <header className="sticky top-0 z-10 bg-[#f7f5f2]/95 backdrop-blur-md border-b border-black/[0.06]">
+        <div className="max-w-6xl mx-auto px-6 sm:px-8 py-5">
+          <div className="flex items-center justify-between">
             {/* Logo */}
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="flex items-center gap-3"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex items-baseline gap-3"
             >
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-violet-500/20">
-                <Library className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h1 className="text-lg font-bold text-white tracking-tight">Library</h1>
-                <p className="text-xs text-white/40 font-medium">{books.length} books</p>
-              </div>
+              <h1 className="font-serif text-2xl sm:text-3xl font-medium text-[#1a1a1a] tracking-tight">
+                Library
+              </h1>
+              <span className="text-[#999999] text-sm font-light">
+                {books.length} volumes
+              </span>
             </motion.div>
 
             {/* Add button */}
             <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => setIsUploadOpen(true)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-white text-black rounded-full font-semibold text-sm"
+              className="flex items-center gap-2 px-5 py-2.5 bg-[#1a1a1a] text-white rounded-full text-sm font-medium tracking-wide hover:bg-[#333333] transition-colors"
             >
               <Plus className="w-4 h-4" />
               <span className="hidden sm:inline">Add Book</span>
             </motion.button>
           </div>
 
-          {/* Search */}
+          {/* Search - Minimal */}
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             transition={{ delay: 0.1 }}
-            className="mt-4"
+            className="mt-6"
           >
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+            <div className="relative max-w-md">
+              <Search className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999999]" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Search your collection..."
-                className="w-full pl-11 pr-4 py-3 bg-white/[0.05] border border-white/[0.08] rounded-2xl text-[15px] text-white placeholder:text-white/30 focus:outline-none focus:border-white/20 transition-all"
+                placeholder="Search collection..."
+                className="w-full pl-7 pr-4 py-2 bg-transparent border-b border-black/[0.08] text-[15px] text-[#1a1a1a] placeholder:text-[#999999] focus:outline-none focus:border-[#1a1a1a]/30 transition-colors"
               />
             </div>
           </motion.div>
@@ -92,28 +91,27 @@ export function Home({ onBookSelect }: HomeProps) {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-6">
+      <main className="max-w-6xl mx-auto px-6 sm:px-8 pt-10">
         {books.length === 0 ? (
-          /* Empty State */
+          /* Empty State - Elegant */
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="flex flex-col items-center justify-center py-24 text-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col items-center justify-center py-32 text-center"
           >
-            <div className="w-20 h-20 rounded-3xl bg-white/[0.05] flex items-center justify-center mb-6 border border-white/[0.08]">
-              <Library className="w-10 h-10 text-white/30" />
-            </div>
-            <h2 className="text-xl font-semibold text-white mb-2">Your library is empty</h2>
-            <p className="text-white/50 max-w-xs mb-8">
-              Start building your collection by adding your first book
+            <p className="font-serif text-3xl text-[#1a1a1a]/20 italic mb-4">
+              Your collection awaits
+            </p>
+            <p className="text-[#666666] max-w-sm mb-10 font-light">
+              Begin curating your personal library by adding your first volume
             </p>
             <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => setIsUploadOpen(true)}
-              className="px-6 py-3 bg-gradient-to-r from-violet-600 to-cyan-600 rounded-full text-white font-semibold"
+              className="px-8 py-3 bg-[#1a1a1a] text-white rounded-full text-sm font-medium tracking-wide hover:bg-[#333333] transition-colors"
             >
-              Add Your First Book
+              Add First Book
             </motion.button>
           </motion.div>
         ) : filteredBooks.length === 0 ? (
@@ -121,14 +119,18 @@ export function Home({ onBookSelect }: HomeProps) {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex flex-col items-center justify-center py-24 text-center"
+            className="flex flex-col items-center justify-center py-32 text-center"
           >
-            <Search className="w-12 h-12 text-white/20 mb-4" />
-            <p className="text-white/50">No books found matching &quot;{searchQuery}&quot;</p>
+            <p className="font-serif text-2xl text-[#1a1a1a]/30 italic mb-2">
+              No matches found
+            </p>
+            <p className="text-[#999999] font-light">
+              Try a different search term
+            </p>
           </motion.div>
         ) : (
-          /* Book Grid - Clean 2-column layout for mobile */
-          <div className="grid grid-cols-2 gap-4 sm:gap-5">
+          /* Book Grid - Editorial Style */
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10">
             <AnimatePresence mode="popLayout">
               {filteredBooks.map((book, index) => (
                 <BookCard
