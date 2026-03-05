@@ -27,7 +27,7 @@ export function Home({ onBookSelect }: HomeProps) {
 
   if (!isLoaded) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-[#0a0a0f]">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
@@ -38,10 +38,10 @@ export function Home({ onBookSelect }: HomeProps) {
   }
 
   return (
-    <div className="min-h-screen pb-24">
+    <div className="min-h-screen bg-[#0a0a0f] pb-32">
       {/* Header */}
-      <header className="sticky top-0 z-10 backdrop-blur-2xl bg-[#050508]/80 border-b border-white/[0.04]">
-        <div className="max-w-5xl mx-auto px-4 py-4">
+      <header className="sticky top-0 z-10 bg-[#0a0a0f]/95 backdrop-blur-xl border-b border-white/[0.06]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4">
           <div className="flex items-center justify-between gap-4">
             {/* Logo */}
             <motion.div
@@ -63,7 +63,7 @@ export function Home({ onBookSelect }: HomeProps) {
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
               onClick={() => setIsUploadOpen(true)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-white text-black rounded-full font-semibold text-sm shadow-lg shadow-white/10 hover:shadow-xl hover:shadow-white/15 transition-shadow"
+              className="flex items-center gap-2 px-4 py-2.5 bg-white text-black rounded-full font-semibold text-sm"
             >
               <Plus className="w-4 h-4" />
               <span className="hidden sm:inline">Add Book</span>
@@ -75,41 +75,43 @@ export function Home({ onBookSelect }: HomeProps) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="mt-4 relative"
+            className="mt-4"
           >
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              placeholder="Search your collection..."
-              className="w-full pl-11 pr-4 py-3 bg-white/[0.04] border border-white/[0.06] rounded-2xl text-[15px] text-white placeholder:text-white/25 focus:outline-none focus:border-white/15 focus:bg-white/[0.06] transition-all"
-            />
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="Search your collection..."
+                className="w-full pl-11 pr-4 py-3 bg-white/[0.05] border border-white/[0.08] rounded-2xl text-[15px] text-white placeholder:text-white/30 focus:outline-none focus:border-white/20 transition-all"
+              />
+            </div>
           </motion.div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-5xl mx-auto px-4 pt-6">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-6">
         {books.length === 0 ? (
           /* Empty State */
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             className="flex flex-col items-center justify-center py-24 text-center"
           >
-            <div className="w-20 h-20 rounded-3xl bg-white/[0.04] flex items-center justify-center mb-6 border border-white/[0.06]">
-              <Library className="w-10 h-10 text-white/20" />
+            <div className="w-20 h-20 rounded-3xl bg-white/[0.05] flex items-center justify-center mb-6 border border-white/[0.08]">
+              <Library className="w-10 h-10 text-white/30" />
             </div>
             <h2 className="text-xl font-semibold text-white mb-2">Your library is empty</h2>
-            <p className="text-white/40 max-w-xs mb-8 text-[15px]">
+            <p className="text-white/50 max-w-xs mb-8">
               Start building your collection by adding your first book
             </p>
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
               onClick={() => setIsUploadOpen(true)}
-              className="px-6 py-3 bg-gradient-to-r from-violet-600 to-cyan-600 rounded-full text-white font-semibold text-sm shadow-lg shadow-violet-500/25"
+              className="px-6 py-3 bg-gradient-to-r from-violet-600 to-cyan-600 rounded-full text-white font-semibold"
             >
               Add Your First Book
             </motion.button>
@@ -122,11 +124,11 @@ export function Home({ onBookSelect }: HomeProps) {
             className="flex flex-col items-center justify-center py-24 text-center"
           >
             <Search className="w-12 h-12 text-white/20 mb-4" />
-            <p className="text-white/40">No books found matching &quot;{searchQuery}&quot;</p>
+            <p className="text-white/50">No books found matching &quot;{searchQuery}&quot;</p>
           </motion.div>
         ) : (
-          /* Book Grid */
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          /* Book Grid - Clean 2-column layout for mobile */
+          <div className="grid grid-cols-2 gap-4 sm:gap-5">
             <AnimatePresence mode="popLayout">
               {filteredBooks.map((book, index) => (
                 <BookCard

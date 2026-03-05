@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
 import { useBooks } from '../hooks/useBooks';
@@ -19,7 +19,6 @@ export function BookDetail({ bookId, onBack, onNavigate }: BookDetailProps) {
   const nextBook = getNextBook(bookId);
   const prevBook = getPrevBook(bookId);
 
-  // Handle swipe navigation
   const handleNext = useCallback(() => {
     if (nextBook && onNavigate) {
       setDirection(1);
@@ -46,27 +45,19 @@ export function BookDetail({ bookId, onBack, onNavigate }: BookDetailProps) {
   }, [handleNext, handlePrev, onBack]);
 
   // Touch/swipe handling
-  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
-  const [touchEnd, setTouchEnd] = useState<{ x: number; y: number } | null>(null);
-
+  const [touchStart, setTouchStart] = useState<{ x: number } | null>(null);
   const minSwipeDistance = 50;
 
   const onTouchStart = (e: React.TouchEvent) => {
-    setTouchEnd(null);
-    setTouchStart({ x: e.targetTouches[0].clientX, y: e.targetTouches[0].clientY });
+    setTouchStart({ x: e.targetTouches[0].clientX });
   };
 
-  const onTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd({ x: e.targetTouches[0].clientX, y: e.targetTouches[0].clientY });
-  };
-
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart.x - touchEnd.x;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-    if (isLeftSwipe) handleNext();
-    if (isRightSwipe) handlePrev();
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStart) return;
+    const distance = touchStart.x - e.changedTouches[0].clientX;
+    if (distance > minSwipeDistance) handleNext();
+    if (distance < -minSwipeDistance) handlePrev();
+    setTouchStart(null);
   };
 
   const handleDelete = () => {
@@ -76,7 +67,7 @@ export function BookDetail({ bookId, onBack, onNavigate }: BookDetailProps) {
 
   if (!book) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-[#0a0a0f]">
         <p className="text-white/40">Book not found</p>
       </div>
     );
@@ -87,16 +78,14 @@ export function BookDetail({ bookId, onBack, onNavigate }: BookDetailProps) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="min-h-screen"
+      className="min-h-screen bg-[#0a0a0f]"
       onTouchStart={onTouchStart}
-      onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
     >
       {/* Header */}
-      <header className="sticky top-0 z-20 backdrop-blur-xl bg-[#0a0a0f]/80">
+      <header className="sticky top-0 z-20 bg-[#0a0a0f]/95 backdrop-blur-xl">
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
           <motion.button
-            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={onBack}
             className="p-2 -ml-2 rounded-full hover:bg-white/10 transition-colors"
@@ -104,15 +93,11 @@ export function BookDetail({ bookId, onBack, onNavigate }: BookDetailProps) {
             <ChevronLeft className="w-6 h-6 text-white" />
           </motion.button>
 
-          <motion.h1
-            layoutId={`book-title-${book.id}`}
-            className="text-lg font-semibold text-white truncate max-w-xs"
-          >
+          <h1 className="text-base font-semibold text-white truncate max-w-[200px]">
             {book.title}
-          </motion.h1>
+          </h1>
 
           <motion.button
-            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setShowDeleteConfirm(true)}
             className="p-2 -mr-2 rounded-full hover:bg-red-500/20 text-red-400 transition-colors"
@@ -124,94 +109,72 @@ export function BookDetail({ bookId, onBack, onNavigate }: BookDetailProps) {
 
       {/* Main Content */}
       <main className="max-w-5xl mx-auto px-4 py-8">
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-          {/* 3D Book */}
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={book.id}
-              initial={{ opacity: 0, x: direction * 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -direction * 50 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              className="flex justify-center py-8"
-            >
-              <Book3D book={book} size="large" autoRotate={true} />
-            </motion.div>
-          </AnimatePresence>
+        {/* 3D Book Display */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={book.id}
+            initial={{ opacity: 0, x: direction * 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -direction * 30 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            className="flex justify-center py-8"
+          >
+            <Book3D book={book} size="large" />
+          </motion.div>
+        </AnimatePresence>
 
-          {/* Book Info */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={book.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ delay: 0.1 }}
-              className="space-y-6"
-            >
-              <div>
-                <motion.h2
-                  layoutId={`book-title-${book.id}`}
-                  className="text-3xl lg:text-4xl font-bold text-white leading-tight"
-                >
-                  {book.title}
-                </motion.h2>
-                <motion.p
-                  layoutId={`book-author-${book.id}`}
-                  className="text-lg text-white/60 mt-2"
-                >
-                  by {book.author || 'Unknown Author'}
-                </motion.p>
-              </div>
+        {/* Book Info */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={book.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="max-w-lg mx-auto text-center"
+          >
+            <h2 className="text-2xl sm:text-3xl font-bold text-white">
+              {book.title}
+            </h2>
+            <p className="text-lg text-white/60 mt-2">
+              by {book.author || 'Unknown Author'}
+            </p>
 
-              {book.description && (
-                <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
-                  <h3 className="text-sm font-medium text-white/40 uppercase tracking-wider mb-3">
-                    About
-                  </h3>
-                  <p className="text-white/80 leading-relaxed">{book.description}</p>
-                </div>
-              )}
+            {book.description && (
+              <p className="text-white/70 mt-6 leading-relaxed">
+                {book.description}
+              </p>
+            )}
 
-              {/* Meta info */}
-              <div className="flex flex-wrap gap-4 text-sm">
-                <div className="px-4 py-2 bg-white/5 rounded-full border border-white/10">
-                  <span className="text-white/40">Added</span>
-                  <span className="text-white ml-2">
-                    {new Date(book.createdAt).toLocaleDateString('en-US', {
-                      month: 'long',
-                      day: 'numeric',
-                      year: 'numeric',
-                    })}
-                  </span>
-                </div>
-              </div>
-            </motion.div>
-          </AnimatePresence>
-        </div>
+            <p className="text-sm text-white/30 mt-8">
+              Added {new Date(book.createdAt).toLocaleDateString('en-US', {
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric',
+              })}
+            </p>
+          </motion.div>
+        </AnimatePresence>
 
-        {/* Navigation arrows (desktop) */}
-        <div className="hidden lg:flex items-center justify-center gap-8 mt-12">
+        {/* Navigation */}
+        <div className="flex items-center justify-center gap-6 mt-12">
           <motion.button
-            whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={handlePrev}
             disabled={!prevBook}
-            className="p-4 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            className="p-4 rounded-full bg-white/5 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           >
             <ChevronLeft className="w-6 h-6 text-white" />
           </motion.button>
 
-          <span className="text-white/40 text-sm">
-            Swipe or use arrows to navigate
+          <span className="text-sm text-white/40">
+            Swipe to navigate
           </span>
 
           <motion.button
-            whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={handleNext}
             disabled={!nextBook}
-            className="p-4 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            className="p-4 rounded-full bg-white/5 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           >
             <ChevronRight className="w-6 h-6 text-white" />
           </motion.button>
