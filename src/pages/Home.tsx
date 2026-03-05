@@ -1,10 +1,11 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Search } from 'lucide-react';
-import { useBooks } from '../hooks/useBooks';
-import { BookCard } from '../components/BookCard';
-import { UploadModal } from '../components/UploadModal';
-import type { Book } from '../types/book';
+import { Search, Plus, Library } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useBooks } from '@/hooks/useBooks';
+import { BookCard } from '@/components/BookCard';
+import { UploadModal } from '@/components/UploadModal';
+import type { Book } from '@/types/book';
 
 interface HomeProps {
   onBookSelect: (book: Book) => void;
@@ -17,120 +18,96 @@ export function Home({ onBookSelect }: HomeProps) {
 
   const filteredBooks = useMemo(() => {
     if (!searchQuery.trim()) return books;
-    const query = searchQuery.toLowerCase();
-    return books.filter(
-      book =>
-        book.title.toLowerCase().includes(query) ||
-        book.author.toLowerCase().includes(query)
+    const q = searchQuery.toLowerCase();
+    return books.filter(b =>
+      b.title.toLowerCase().includes(q) ||
+      b.author.toLowerCase().includes(q)
     );
   }, [books, searchQuery]);
 
   if (!isLoaded) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f7f5f2]">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="w-6 h-6 border border-[#1a1a1a]/20 border-t-[#1a1a1a] rounded-full animate-spin"
-        />
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-6 h-6 border-2 border-muted-foreground/30 border-t-primary rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#f7f5f2]">
-      {/* Elegant Header */}
-      <header className="sticky top-0 z-10 bg-[#f7f5f2]/95 backdrop-blur-md border-b border-black/[0.06]">
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-5">
-          <div className="flex items-center justify-between">
-            {/* Logo */}
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex items-baseline gap-3"
-            >
-              <h1 className="font-serif text-2xl sm:text-3xl font-medium text-[#1a1a1a] tracking-tight">
-                Library
-              </h1>
-              <span className="text-[#999999] text-sm font-light hidden sm:inline">
-                {books.length} volumes
-              </span>
-            </motion.div>
-
-            {/* Add button */}
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => setIsUploadOpen(true)}
-              className="flex items-center gap-2 px-5 py-2.5 bg-[#1a1a1a] text-white rounded-full text-sm font-medium tracking-wide hover:bg-[#333333] transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">Add Book</span>
-            </motion.button>
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex h-16 items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Library className="h-5 w-5 text-muted-foreground" />
+            <h1 className="font-serif text-xl font-semibold tracking-tight">
+              Library
+            </h1>
+            <span className="text-xs text-muted-foreground ml-2 hidden sm:inline">
+              {books.length} volumes
+            </span>
           </div>
-
-          {/* Search - Minimal */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.1 }}
-            className="mt-6"
+          
+          <Button 
+            onClick={() => setIsUploadOpen(true)}
+            size="sm"
+            className="gap-1.5"
           >
-            <div className="relative max-w-md">
-              <Search className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999999]" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Search collection..."
-                className="w-full pl-7 pr-4 py-2 bg-transparent border-b border-black/[0.08] text-[15px] text-[#1a1a1a] placeholder:text-[#999999] focus:outline-none focus:border-[#1a1a1a]/30 transition-colors"
-              />
-            </div>
-          </motion.div>
+            <Plus className="h-4 w-4" />
+            <span className="hidden sm:inline">Add Book</span>
+          </Button>
+        </div>
+        
+        {/* Search Bar */}
+        <div className="container pb-4">
+          <div className="relative max-w-md">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Search collection..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full rounded-md border border-input bg-background pl-9 pr-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            />
+          </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-12">
+      <main className="container py-8">
         {books.length === 0 ? (
-          /* Empty State */
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col items-center justify-center py-32 text-center"
+            className="flex flex-col items-center justify-center py-24 text-center"
           >
-            <p className="font-serif text-3xl text-[#1a1a1a]/20 italic mb-4">
-              Your collection awaits
+            <div className="rounded-full bg-muted p-6 mb-6">
+              <Library className="h-10 w-10 text-muted-foreground/50" />
+            </div>
+            <h2 className="font-serif text-2xl font-medium mb-2">
+              Your collection is empty
+            </h2>
+            <p className="text-muted-foreground text-sm max-w-xs mb-8">
+              Start building your personal library by adding your first book
             </p>
-            <p className="text-[#666666] max-w-sm mb-10 font-light">
-              Begin curating your personal library by adding your first volume
-            </p>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => setIsUploadOpen(true)}
-              className="px-8 py-3 bg-[#1a1a1a] text-white rounded-full text-sm font-medium tracking-wide hover:bg-[#333333] transition-colors"
-            >
+            <Button onClick={() => setIsUploadOpen(true)}>
+              <Plus className="h-4 w-4 mr-2" />
               Add First Book
-            </motion.button>
+            </Button>
           </motion.div>
         ) : filteredBooks.length === 0 ? (
-          /* No Search Results */
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex flex-col items-center justify-center py-32 text-center"
+            className="flex flex-col items-center justify-center py-24 text-center"
           >
-            <p className="font-serif text-2xl text-[#1a1a1a]/30 italic mb-2">
-              No matches found
-            </p>
-            <p className="text-[#999999] font-light">
-              Try a different search term
+            <Search className="h-10 w-10 text-muted-foreground/30 mb-4" />
+            <p className="text-muted-foreground">
+              No books found for &ldquo;{searchQuery}&rdquo;
             </p>
           </motion.div>
         ) : (
-          /* Book Grid - Masonry-style editorial layout */
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-6 gap-y-10">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
             <AnimatePresence mode="popLayout">
               {filteredBooks.map((book, index) => (
                 <BookCard
@@ -145,7 +122,6 @@ export function Home({ onBookSelect }: HomeProps) {
         )}
       </main>
 
-      {/* Upload Modal */}
       <UploadModal
         isOpen={isUploadOpen}
         onClose={() => setIsUploadOpen(false)}

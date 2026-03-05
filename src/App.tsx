@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Home } from './pages/Home';
-import { BookDetail } from './pages/BookDetail';
-import type { Book } from './types/book';
+import { Home } from '@/pages/Home';
+import { BookDetail } from '@/pages/BookDetail';
+import type { Book } from '@/types/book';
 
 function App() {
   const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
@@ -12,16 +12,11 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleBack = () => {
-    setSelectedBookId(null);
-  };
-
-  const handleNavigate = (bookId: string) => {
-    setSelectedBookId(bookId);
-  };
+  const handleBack = () => setSelectedBookId(null);
+  const handleNavigate = (bookId: string) => setSelectedBookId(bookId);
 
   return (
-    <div className="min-h-screen bg-[#f7f5f2]">
+    <div className="min-h-screen bg-background">
       <AnimatePresence mode="wait">
         {selectedBookId ? (
           <motion.div
@@ -29,7 +24,7 @@ function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.2 }}
           >
             <BookDetail
               bookId={selectedBookId}
@@ -43,7 +38,7 @@ function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.2 }}
           >
             <Home onBookSelect={handleBookSelect} />
           </motion.div>
