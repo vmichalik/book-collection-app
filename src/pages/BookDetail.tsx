@@ -119,7 +119,7 @@ export function BookDetail({ bookId, onBack, onNavigate }: BookDetailProps) {
                 transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
                 className="flex justify-center items-center py-12"
               >
-                <Book3D book={book} size="large" autoRotate={true} />
+                <Book3D book={book} size="medium" autoRotate={true} />
               </motion.div>
             </AnimatePresence>
 
