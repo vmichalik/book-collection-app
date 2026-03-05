@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 
 interface TrayProps {
   children: React.ReactNode;
-  height?: string; // e.g. '85vh', '45vh'
+  height?: string;
   onClose: () => void;
   className?: string;
 }
@@ -37,8 +37,9 @@ export function Tray({ children, height = '85vh', onClose, className }: TrayProp
       transition={TRAY_TRANSITION}
       className={cn(
         'fixed bottom-0 left-0 right-0 z-50',
-        'bg-background rounded-t-2xl shadow-2xl',
+        'bg-background rounded-t-xl border-t border-border',
         'overflow-y-auto overscroll-contain',
+        'shadow-[0_-4px_32px_rgba(0,0,0,0.08)]',
         className,
       )}
       style={{ maxHeight: height }}

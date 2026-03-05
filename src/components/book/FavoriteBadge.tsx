@@ -14,9 +14,9 @@ export function FavoriteBadge({ favorited }: FavoriteBadgeProps) {
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0, opacity: 0 }}
           transition={{ type: 'spring', stiffness: 500, damping: 25 }}
-          className="absolute top-2 right-2 z-10 p-1 rounded-full bg-white/90 shadow-sm"
+          className="absolute top-1.5 right-1.5 z-10"
         >
-          <Heart className="h-3 w-3 fill-red-500 text-red-500" />
+          <Heart className="h-3 w-3 fill-accent text-accent drop-shadow-sm" />
         </motion.div>
       )}
     </AnimatePresence>

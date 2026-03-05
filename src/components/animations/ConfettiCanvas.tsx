@@ -31,14 +31,14 @@ export function ConfettiCanvas({ milestone, onDone }: ConfettiCanvasProps) {
           />
           {message && (
             <motion.div
-              initial={{ opacity: 0, scale: 0.8, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.8, y: -20 }}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -16 }}
               transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-              className="fixed z-[101] bottom-32 left-1/2 -translate-x-1/2 pointer-events-none"
+              className="fixed z-[101] bottom-24 left-1/2 -translate-x-1/2 pointer-events-none"
             >
-              <div className="bg-foreground text-background px-6 py-3 rounded-full shadow-2xl text-sm font-medium whitespace-nowrap">
-                {milestone} books! {message}
+              <div className="bg-foreground text-background px-4 py-2 rounded-md text-xs font-mono whitespace-nowrap shadow-lg">
+                {milestone} books — {message}
               </div>
             </motion.div>
           )}

@@ -14,14 +14,14 @@ export function NumberRoll({ value, className }: NumberRollProps) {
         {digits.map((digit, i) => (
           <motion.span
             key={`${i}-${digit}`}
-            initial={{ y: 12, opacity: 0 }}
+            initial={{ y: 10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -12, opacity: 0 }}
+            exit={{ y: -10, opacity: 0 }}
             transition={{
               type: 'spring',
               stiffness: 500,
               damping: 30,
-              delay: i * 0.05,
+              delay: i * 0.04,
             }}
             className="inline-block tabular-nums"
           >

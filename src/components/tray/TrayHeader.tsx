@@ -10,37 +10,39 @@ interface TrayHeaderProps {
 
 export function TrayHeader({ title, showBack = false, onBack, onClose }: TrayHeaderProps) {
   return (
-    <div className="flex items-center justify-between px-5 pt-3 pb-2">
+    <div className="relative flex items-center justify-between px-5 pt-4 pb-3">
       {/* Drag indicator */}
-      <div className="absolute top-2 left-1/2 -translate-x-1/2 w-10 h-1 rounded-full bg-muted-foreground/20" />
+      <div className="absolute top-1.5 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full bg-foreground/10" />
 
-      <div className="flex items-center gap-2 mt-2">
+      <div className="flex items-center gap-2">
         <AnimatePresence mode="wait">
           {showBack && onBack ? (
             <motion.button
               key="back"
-              initial={{ opacity: 0, x: -10 }}
+              initial={{ opacity: 0, x: -8 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
+              exit={{ opacity: 0, x: -8 }}
               onClick={onBack}
-              className="p-1.5 -ml-1.5 rounded-full hover:bg-muted transition-colors"
+              className="p-1 -ml-1 rounded hover:bg-muted transition-colors"
               aria-label="Go back"
             >
-              <ArrowLeft className="h-5 w-5 text-muted-foreground" />
+              <ArrowLeft className="h-4 w-4 text-muted-foreground" />
             </motion.button>
           ) : null}
         </AnimatePresence>
         {title && (
-          <h2 className="font-serif text-lg font-medium mt-0.5">{title}</h2>
+          <h2 className="text-[11px] font-mono font-medium uppercase tracking-widest text-muted-foreground">
+            {title}
+          </h2>
         )}
       </div>
 
       <button
         onClick={onClose}
-        className="p-1.5 rounded-full hover:bg-muted transition-colors mt-2"
+        className="p-1 rounded hover:bg-muted transition-colors"
         aria-label="Close"
       >
-        <X className="h-5 w-5 text-muted-foreground" />
+        <X className="h-4 w-4 text-muted-foreground" />
       </button>
     </div>
   );

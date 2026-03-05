@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Trash2, Calendar, BookOpen } from 'lucide-react';
+import { Heart, Trash2 } from 'lucide-react';
 import { TrayHeader } from '@/components/tray/TrayHeader';
 import { BookCoverImage } from '@/components/book/BookCoverImage';
 import { Book3D } from '@/components/book/Book3D';
-import { Button } from '@/components/ui/button';
 import type { Book } from '@/types/book';
 
 interface BookDetailTrayProps {
@@ -22,7 +21,7 @@ export function BookDetailTray({ book, onClose, onDelete, onToggleFavorite }: Bo
     <div className="flex flex-col min-h-0">
       <TrayHeader onClose={onClose} />
 
-      <div className="flex-1 overflow-y-auto px-5 pb-8">
+      <div className="flex-1 overflow-y-auto px-5 pb-10">
         {/* Cover */}
         <div className="flex justify-center my-4">
           {show3D ? (
@@ -38,12 +37,11 @@ export function BookDetailTray({ book, onClose, onDelete, onToggleFavorite }: Bo
             <motion.div
               className="cursor-pointer"
               onClick={() => setShow3D(true)}
-              whileTap={{ scale: 0.97 }}
+              whileTap={{ scale: 0.98 }}
             >
               <BookCoverImage
                 book={book}
-                className="w-44 h-64 rounded-lg shadow-xl"
-                enableLayout
+                className="w-36 sm:w-44 aspect-[2/3] rounded-sm shadow-lg"
               />
             </motion.div>
           )}
@@ -51,49 +49,49 @@ export function BookDetailTray({ book, onClose, onDelete, onToggleFavorite }: Bo
 
         {/* Title + Author */}
         <div className="text-center mb-6">
-          <h2 className="font-serif text-2xl md:text-3xl font-medium leading-tight mb-1.5 text-balance">
+          <h2 className="text-lg font-semibold leading-tight mb-1 tracking-tight">
             {book.title}
           </h2>
-          <p className="text-base text-muted-foreground">
-            by {book.author || 'Unknown Author'}
+          <p className="text-sm text-muted-foreground">
+            {book.author || 'Unknown Author'}
           </p>
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-center gap-3 mb-6">
-          <Button
-            variant={book.favorited ? 'default' : 'outline'}
-            size="sm"
+        <div className="flex items-center justify-center gap-2 mb-6">
+          <button
             onClick={() => onToggleFavorite(book.id)}
-            className="gap-1.5"
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              book.favorited
+                ? 'bg-foreground text-background'
+                : 'bg-muted text-foreground hover:bg-muted-foreground/10'
+            }`}
           >
-            <Heart className={`h-4 w-4 ${book.favorited ? 'fill-current' : ''}`} />
+            <Heart className={`h-3.5 w-3.5 ${book.favorited ? 'fill-current' : ''}`} />
             {book.favorited ? 'Favorited' : 'Favorite'}
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
+          </button>
+          <button
             onClick={() => setShowDelete(true)}
-            className="gap-1.5 text-muted-foreground hover:text-destructive hover:border-destructive"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-muted text-muted-foreground hover:text-destructive transition-colors"
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className="h-3.5 w-3.5" />
             Remove
-          </Button>
+          </button>
         </div>
 
-        {/* Meta */}
-        <div className="space-y-4 mb-6">
+        {/* Meta info */}
+        <div className="space-y-3 mb-6">
           {book.genre && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <BookOpen className="h-4 w-4" />
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Genre</span>
               <span>{book.genre}</span>
             </div>
           )}
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Calendar className="h-4 w-4" />
+          <div className="flex items-center justify-between text-xs">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Added</span>
             <span>
-              Added {new Date(book.createdAt).toLocaleDateString('en-US', {
-                month: 'long', day: 'numeric', year: 'numeric'
+              {new Date(book.createdAt).toLocaleDateString('en-US', {
+                month: 'short', day: 'numeric', year: 'numeric'
               })}
             </span>
           </div>
@@ -101,11 +99,21 @@ export function BookDetailTray({ book, onClose, onDelete, onToggleFavorite }: Bo
 
         {/* Description */}
         {book.description && (
-          <div className="border-t pt-5">
-            <p className="text-sm text-muted-foreground leading-relaxed text-pretty">
+          <div className="border-t border-border pt-4">
+            <p className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground mb-2">Notes</p>
+            <p className="text-sm text-muted-foreground leading-relaxed">
               {book.description}
             </p>
           </div>
+        )}
+
+        {!show3D && (
+          <button
+            onClick={() => setShow3D(true)}
+            className="mt-6 w-full py-2 text-[11px] font-mono uppercase tracking-widest text-muted-foreground hover:text-foreground border border-border rounded-md transition-colors"
+          >
+            View in 3D
+          </button>
         )}
       </div>
 
@@ -116,27 +124,33 @@ export function BookDetailTray({ book, onClose, onDelete, onToggleFavorite }: Bo
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-end justify-center"
+            className="absolute inset-0 z-50 bg-black/30 backdrop-blur-xs flex items-end justify-center"
             onClick={() => setShowDelete(false)}
           >
             <motion.div
-              initial={{ y: 40, opacity: 0 }}
+              initial={{ y: 30, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 40, opacity: 0 }}
-              className="bg-background rounded-t-2xl p-6 w-full max-w-md"
+              exit={{ y: 30, opacity: 0 }}
+              className="bg-background rounded-t-xl border-t border-border p-5 w-full"
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="font-serif text-xl font-medium mb-2">Remove Book?</h3>
-              <p className="text-sm text-muted-foreground mb-6 text-pretty">
-                &ldquo;{book.title}&rdquo; will be permanently removed from your collection.
+              <p className="text-sm font-medium mb-1">Remove "{book.title}"?</p>
+              <p className="text-xs text-muted-foreground mb-5">
+                This cannot be undone.
               </p>
-              <div className="flex gap-3">
-                <Button variant="outline" className="flex-1" onClick={() => setShowDelete(false)}>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setShowDelete(false)}
+                  className="flex-1 py-2 text-xs font-medium rounded-md border border-border hover:bg-muted transition-colors"
+                >
                   Cancel
-                </Button>
-                <Button variant="destructive" className="flex-1" onClick={() => onDelete(book.id)}>
+                </button>
+                <button
+                  onClick={() => onDelete(book.id)}
+                  className="flex-1 py-2 text-xs font-medium rounded-md bg-destructive text-white hover:bg-destructive/90 transition-colors"
+                >
                   Remove
-                </Button>
+                </button>
               </div>
             </motion.div>
           </motion.div>

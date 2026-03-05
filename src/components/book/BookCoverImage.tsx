@@ -1,32 +1,18 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { SHARED_ELEMENT_TRANSITION } from '@/lib/animations';
 import { cn } from '@/lib/utils';
 import type { Book } from '@/types/book';
 
 interface BookCoverImageProps {
   book: Book;
   className?: string;
-  sizes?: string;
-  enableLayout?: boolean;
 }
 
-export function BookCoverImage({ book, className, enableLayout = true }: BookCoverImageProps) {
+export function BookCoverImage({ book, className }: BookCoverImageProps) {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
 
-  const layoutProps = enableLayout
-    ? { layoutId: `cover-${book.id}`, transition: SHARED_ELEMENT_TRANSITION }
-    : {};
-
   return (
-    <motion.div
-      {...layoutProps}
-      className={cn(
-        'relative overflow-hidden bg-muted',
-        className,
-      )}
-    >
+    <div className={cn('relative overflow-hidden bg-muted', className)}>
       {!loaded && !error && (
         <div className="absolute inset-0 shimmer" />
       )}
@@ -44,13 +30,13 @@ export function BookCoverImage({ book, className, enableLayout = true }: BookCov
         />
       ) : (
         <div
-          className="w-full h-full flex flex-col items-center justify-center p-4 text-center text-white"
+          className="w-full h-full flex flex-col items-center justify-center p-3 text-center text-white"
           style={{ background: book.spineColor || '#525252' }}
         >
-          <p className="font-serif text-sm leading-snug line-clamp-3">{book.title}</p>
-          <p className="text-xs text-white/70 mt-2 line-clamp-1">{book.author}</p>
+          <p className="text-[11px] font-medium leading-snug line-clamp-3">{book.title}</p>
+          <p className="text-[9px] text-white/60 mt-1 line-clamp-1">{book.author}</p>
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }

@@ -30,12 +30,10 @@ export function BookGridItem({ book, index, onSelect, onToggleFavorite }: BookGr
       const y = clientY - rect.top;
       setHearts(prev => [...prev, { id: now, x, y }]);
       onToggleFavorite(book.id);
-      // Haptic
       if (navigator.vibrate) navigator.vibrate(10);
       lastTap.current = 0;
     } else {
       lastTap.current = now;
-      // Single tap with delay
       setTimeout(() => {
         if (lastTap.current === now) {
           onSelect(book.id);
@@ -62,22 +60,25 @@ export function BookGridItem({ book, index, onSelect, onToggleFavorite }: BookGr
       className="group cursor-pointer text-left w-full relative"
     >
       {/* Cover */}
-      <div className="relative aspect-[2/3] mb-3 rounded-md ring-1 ring-black/5 group-hover:ring-black/10 shadow-sm group-hover:shadow-md transition-all duration-300 overflow-hidden">
-        <BookCoverImage book={book} className="w-full h-full rounded-md" />
+      <div className="relative aspect-[2/3] mb-2.5 overflow-hidden rounded-sm bg-muted">
+        <BookCoverImage book={book} className="w-full h-full" />
         <FavoriteBadge favorited={!!book.favorited} />
 
-        {/* Heart reactions */}
+        {/* Hover overlay */}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-200" />
+
+        {/* Hearts */}
         {hearts.map(h => (
           <HeartReaction key={h.id} x={h.x} y={h.y} onDone={() => removeHeart(h.id)} />
         ))}
       </div>
 
-      {/* Info */}
-      <div className="space-y-0.5 px-0.5">
-        <h3 className="font-serif text-sm font-medium leading-tight line-clamp-2 group-hover:text-muted-foreground transition-colors">
+      {/* Info — minimal, TE style */}
+      <div className="space-y-0.5">
+        <h3 className="text-xs font-medium leading-tight line-clamp-1 tracking-tight">
           {book.title}
         </h3>
-        <p className="text-xs text-muted-foreground line-clamp-1">
+        <p className="text-[11px] text-muted-foreground line-clamp-1">
           {book.author}
         </p>
       </div>

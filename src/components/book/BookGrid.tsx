@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Search, Library } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { BookGridItem } from './BookGridItem';
 import type { Book } from '@/types/book';
 
@@ -23,20 +23,20 @@ export function BookGrid({ books, onBookSelect, onToggleFavorite }: BookGridProp
   }, [books, searchQuery]);
 
   return (
-    <main className="px-4 sm:px-6 pt-4 pb-8">
+    <main className="px-5 sm:px-8 pt-6 pb-8">
       {/* Search */}
       {books.length > 0 && (
-        <div className="relative max-w-md mb-6">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+        <div className="relative max-w-xs mb-8">
+          <Search className="absolute left-0 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
           <label htmlFor="book-search" className="sr-only">Search your collection</label>
           <input
             id="book-search"
             type="search"
-            placeholder="Search collection..."
+            placeholder="Search..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             autoComplete="off"
-            className="w-full rounded-lg border border-input bg-background pl-9 pr-4 py-2.5 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="w-full bg-transparent border-b border-border pl-6 pr-2 py-2 text-xs font-mono placeholder:text-muted-foreground focus:outline-none focus:border-foreground transition-colors"
           />
         </div>
       )}
@@ -44,33 +44,29 @@ export function BookGrid({ books, onBookSelect, onToggleFavorite }: BookGridProp
       {/* Grid */}
       {books.length === 0 ? (
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col items-center justify-center py-24 text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="flex flex-col items-center justify-center py-32 text-center"
         >
-          <div className="rounded-full bg-muted p-6 mb-6">
-            <Library className="h-10 w-10 text-muted-foreground/50" />
-          </div>
-          <h2 className="font-serif text-2xl font-medium mb-2 text-balance">
-            Your Collection Is Empty
-          </h2>
-          <p className="text-muted-foreground text-sm max-w-xs text-pretty">
-            Tap the + button below to add your first book.
+          <p className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground mb-3">
+            No books yet
+          </p>
+          <p className="text-sm text-muted-foreground max-w-[200px]">
+            Tap + to add your first book.
           </p>
         </motion.div>
       ) : filteredBooks.length === 0 ? (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="flex flex-col items-center justify-center py-24 text-center"
+          className="flex flex-col items-center justify-center py-32 text-center"
         >
-          <Search className="h-10 w-10 text-muted-foreground/30 mb-4" />
-          <p className="text-muted-foreground">
-            No books found for &ldquo;{searchQuery}&rdquo;
+          <p className="text-sm text-muted-foreground">
+            No results for "{searchQuery}"
           </p>
         </motion.div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-5 sm:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-4 gap-y-8 sm:gap-x-5 sm:gap-y-10">
           <AnimatePresence mode="popLayout">
             {filteredBooks.map((book, index) => (
               <BookGridItem

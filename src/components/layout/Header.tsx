@@ -1,4 +1,3 @@
-import { Library } from 'lucide-react';
 import { NumberRoll } from '@/components/animations/NumberRoll';
 
 interface HeaderProps {
@@ -7,17 +6,14 @@ interface HeaderProps {
 
 export function Header({ bookCount }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-30 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="flex items-center justify-between px-4 sm:px-6 h-14">
-        <div className="flex items-center gap-2.5">
-          <Library className="h-5 w-5 text-muted-foreground" />
-          <h1 className="font-serif text-xl font-semibold tracking-tight">
-            Library
-          </h1>
-        </div>
-        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+    <header className="sticky top-0 z-30 w-full bg-background/80 backdrop-blur-md border-b border-border">
+      <div className="flex items-center justify-between px-5 sm:px-8 h-12">
+        <span className="text-[11px] font-mono font-medium tracking-widest uppercase text-muted-foreground">
+          Library
+        </span>
+        <div className="flex items-center gap-1.5 text-[11px] font-mono text-muted-foreground tracking-wide">
           <NumberRoll value={bookCount} />
-          <span className="ml-0.5">{bookCount === 1 ? 'volume' : 'volumes'}</span>
+          <span>{bookCount === 1 ? 'item' : 'items'}</span>
         </div>
       </div>
     </header>

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Library, Plus, Settings } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type Tab = 'library' | 'settings';
@@ -12,61 +12,52 @@ interface TabBarProps {
 }
 
 export function TabBar({ activeTab, onLibrary, onAdd, onSettings }: TabBarProps) {
-  const handlers: Record<Tab, () => void> = {
-    library: onLibrary,
-    settings: onSettings,
-  };
-
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-30 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t pb-[env(safe-area-inset-bottom)]">
-      <div className="flex items-center justify-around h-14 max-w-md mx-auto">
-        {/* Library tab */}
+    <nav className="fixed bottom-0 left-0 right-0 z-30 bg-background/80 backdrop-blur-md border-t border-border pb-[env(safe-area-inset-bottom)]">
+      <div className="flex items-center justify-around h-12 max-w-md mx-auto">
+        {/* Library */}
         <button
-          onClick={handlers.library}
+          onClick={onLibrary}
           className={cn(
-            'relative flex flex-col items-center gap-0.5 px-6 py-1.5 transition-colors',
+            'relative flex items-center gap-1.5 px-4 py-2 text-[11px] font-mono tracking-wide uppercase transition-colors',
             activeTab === 'library' ? 'text-foreground' : 'text-muted-foreground'
           )}
-          aria-label="Library"
         >
           {activeTab === 'library' && (
             <motion.div
               layoutId="tab-indicator"
-              className="absolute -top-px left-2 right-2 h-0.5 bg-foreground rounded-full"
+              className="absolute bottom-0 left-3 right-3 h-px bg-foreground"
               transition={{ type: 'spring', stiffness: 400, damping: 30 }}
             />
           )}
-          <Library className="h-5 w-5" />
-          <span className="text-[10px] font-medium">Library</span>
+          Library
         </button>
 
-        {/* Add button (center, prominent) */}
+        {/* Add — center circle */}
         <button
           onClick={onAdd}
-          className="flex items-center justify-center w-12 h-12 -mt-4 rounded-full bg-foreground text-background shadow-lg active:scale-95 transition-transform"
+          className="flex items-center justify-center w-10 h-10 -mt-3 rounded-full bg-foreground text-background active:scale-95 transition-transform"
           aria-label="Add Book"
         >
-          <Plus className="h-6 w-6" />
+          <Plus className="h-4 w-4" strokeWidth={2} />
         </button>
 
-        {/* Settings tab */}
+        {/* Settings */}
         <button
-          onClick={handlers.settings}
+          onClick={onSettings}
           className={cn(
-            'relative flex flex-col items-center gap-0.5 px-6 py-1.5 transition-colors',
+            'relative flex items-center gap-1.5 px-4 py-2 text-[11px] font-mono tracking-wide uppercase transition-colors',
             activeTab === 'settings' ? 'text-foreground' : 'text-muted-foreground'
           )}
-          aria-label="Settings"
         >
           {activeTab === 'settings' && (
             <motion.div
               layoutId="tab-indicator"
-              className="absolute -top-px left-2 right-2 h-0.5 bg-foreground rounded-full"
+              className="absolute bottom-0 left-3 right-3 h-px bg-foreground"
               transition={{ type: 'spring', stiffness: 400, damping: 30 }}
             />
           )}
-          <Settings className="h-5 w-5" />
-          <span className="text-[10px] font-medium">Settings</span>
+          Settings
         </button>
       </div>
     </nav>

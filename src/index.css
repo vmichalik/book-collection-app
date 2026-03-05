@@ -1,49 +1,35 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@theme {
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
-@layer base {
-  :root {
-    --background: 30 25% 96%;
-    --foreground: 24 10% 10%;
-    --card: 30 25% 98%;
-    --card-foreground: 24 10% 10%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 24 10% 10%;
-    --primary: 24 10% 10%;
-    --primary-foreground: 30 25% 96%;
-    --secondary: 30 15% 92%;
-    --secondary-foreground: 24 10% 10%;
-    --muted: 30 15% 92%;
-    --muted-foreground: 24 6% 45%;
-    --accent: 30 15% 92%;
-    --accent-foreground: 24 10% 10%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 24 6% 83%;
-    --input: 24 6% 83%;
-    --ring: 24 6% 65%;
-    --radius: 0.5rem;
-    --heart: 0 84% 60%;
-  }
+  --color-background: #fafafa;
+  --color-foreground: #0a0a0a;
+  --color-muted: #f0f0f0;
+  --color-muted-foreground: #737373;
+  --color-border: #e5e5e5;
+  --color-input: #e5e5e5;
+  --color-ring: #a3a3a3;
+  --color-accent: #ff4d00;
+  --color-destructive: #ef4444;
+  --color-card: #ffffff;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground antialiased;
-    font-feature-settings: "rlig" 1, "calt" 1;
-  }
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+/* Base */
+body {
+  font-family: var(--font-sans);
+  background: var(--color-background);
+  color: var(--color-foreground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
 }
 
 /* Shimmer loading animation */
@@ -55,24 +41,15 @@
 .shimmer {
   background: linear-gradient(
     90deg,
-    hsl(var(--muted)) 25%,
-    hsl(var(--muted-foreground) / 0.08) 50%,
-    hsl(var(--muted)) 75%
+    var(--color-muted) 25%,
+    #e8e8e8 50%,
+    var(--color-muted) 75%
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
 }
 
 /* 3D Book Styles */
-.book-3d-container {
-  perspective: 1200px;
-  transform-style: preserve-3d;
-}
-
-.book-3d {
-  transform-style: preserve-3d;
-}
-
 .book-face {
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
@@ -84,10 +61,10 @@
   -webkit-overflow-scrolling: touch;
 }
 
-/* Smooth scrollbar */
+/* Scrollbar — thin, minimal */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {
@@ -95,25 +72,23 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground) / 0.3);
-  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground) / 0.5);
+  background: rgba(0, 0, 0, 0.3);
 }
 
 /* Selection */
 ::selection {
-  background: hsl(var(--primary) / 0.2);
-  color: hsl(var(--foreground));
+  background: rgba(255, 77, 0, 0.15);
+  color: var(--color-foreground);
 }
 
-/* Respect reduced motion preferences */
+/* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
@@ -121,13 +96,34 @@
   }
 }
 
-/* Touch optimization */
+/* Touch */
 html {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Tabular numbers for rolling digits */
+/* Tabular nums for rolling digits */
 .tabular-nums {
   font-variant-numeric: tabular-nums;
+}
+
+/* Form field — shared input style */
+.field-input {
+  width: 100%;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--color-foreground);
+  transition: border-color 0.15s;
+}
+
+.field-input::placeholder {
+  color: var(--color-muted-foreground);
+}
+
+.field-input:focus {
+  outline: none;
+  border-color: var(--color-foreground);
 }
