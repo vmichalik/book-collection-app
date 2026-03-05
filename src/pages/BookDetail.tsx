@@ -61,39 +61,40 @@ export function BookDetail({ bookId, onBack, onNavigate }: BookDetailProps) {
 
   if (!book) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-dvh flex items-center justify-center">
         <p className="text-muted-foreground">Book not found</p>
       </div>
     );
   }
 
   return (
-    <div 
-      className="min-h-screen bg-background"
+    <div
+      className="min-h-dvh bg-background"
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
       {/* Top Bar */}
-      <header className="fixed top-0 left-0 right-0 z-50 p-4">
+      <header className="fixed top-0 left-0 right-0 z-50 p-4 pt-[max(1rem,env(safe-area-inset-top))]">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <Button variant="ghost" size="sm" onClick={onBack} className="gap-2">
             <ArrowLeft className="h-4 w-4" />
             Back
           </Button>
           
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => setShowDelete(true)}
+            aria-label="Delete book"
             className="text-muted-foreground hover:text-destructive"
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className="h-4 w-4" aria-hidden="true" />
           </Button>
         </div>
       </header>
 
       {/* Content */}
-      <main className="min-h-screen flex items-center justify-center px-4 py-20">
+      <main className="min-h-dvh flex items-center justify-center px-4 py-20">
         <div className="w-full max-w-4xl">
           <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
             
@@ -122,7 +123,7 @@ export function BookDetail({ bookId, onBack, onNavigate }: BookDetailProps) {
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.4, delay: 0.1 }}
                 >
-                  <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl font-medium leading-tight mb-3">
+                  <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl font-medium leading-tight mb-3 text-balance">
                     {book.title}
                   </h1>
                   
@@ -131,7 +132,7 @@ export function BookDetail({ bookId, onBack, onNavigate }: BookDetailProps) {
                   </p>
 
                   {book.description && (
-                    <p className="text-sm text-muted-foreground leading-relaxed mb-8 max-w-md mx-auto md:mx-0">
+                    <p className="text-sm text-muted-foreground leading-relaxed mb-8 max-w-md mx-auto md:mx-0 text-pretty">
                       {book.description}
                     </p>
                   )}
@@ -185,29 +186,36 @@ export function BookDetail({ bookId, onBack, onNavigate }: BookDetailProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4"
+            style={{ overscrollBehavior: 'contain' }}
             onClick={() => setShowDelete(false)}
+            onKeyDown={(e) => { if (e.key === 'Escape') setShowDelete(false); }}
           >
             <motion.div
+              role="alertdialog"
+              aria-modal="true"
+              aria-labelledby="delete-dialog-title"
+              aria-describedby="delete-dialog-desc"
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               className="bg-background rounded-lg p-6 max-w-sm w-full shadow-xl border"
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="font-serif text-xl font-medium mb-2">Remove book?</h3>
-              <p className="text-sm text-muted-foreground mb-6">
+              <h3 id="delete-dialog-title" className="font-serif text-xl font-medium mb-2 text-balance">Remove Book?</h3>
+              <p id="delete-dialog-desc" className="text-sm text-muted-foreground mb-6 text-pretty">
                 &ldquo;{book.title}&rdquo; will be permanently removed from your collection.
               </p>
               <div className="flex gap-3">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="flex-1"
                   onClick={() => setShowDelete(false)}
+                  autoFocus
                 >
                   Cancel
                 </Button>
-                <Button 
-                  variant="destructive" 
+                <Button
+                  variant="destructive"
                   className="flex-1"
                   onClick={() => {
                     deleteBook(bookId);

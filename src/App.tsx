@@ -16,7 +16,7 @@ function App() {
   const handleNavigate = (bookId: string) => setSelectedBookId(bookId);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-dvh bg-background">
       <AnimatePresence mode="wait">
         {selectedBookId ? (
           <motion.div

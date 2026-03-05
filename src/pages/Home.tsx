@@ -27,14 +27,14 @@ export function Home({ onBookSelect }: HomeProps) {
 
   if (!isLoaded) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-dvh flex items-center justify-center">
         <div className="w-6 h-6 border-2 border-muted-foreground/30 border-t-primary rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-dvh bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">
@@ -48,12 +48,13 @@ export function Home({ onBookSelect }: HomeProps) {
             </span>
           </div>
           
-          <Button 
+          <Button
             onClick={() => setIsUploadOpen(true)}
             size="sm"
+            aria-label="Add Book"
             className="gap-1.5"
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="h-4 w-4" aria-hidden="true" />
             <span className="hidden sm:inline">Add Book</span>
           </Button>
         </div>
@@ -61,12 +62,15 @@ export function Home({ onBookSelect }: HomeProps) {
         {/* Search Bar */}
         <div className="container pb-4">
           <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+            <label htmlFor="book-search" className="sr-only">Search your collection</label>
             <input
-              type="text"
-              placeholder="Search collection..."
+              id="book-search"
+              type="search"
+              placeholder="Search collection…"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              autoComplete="off"
               className="w-full rounded-md border border-input bg-background pl-9 pr-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
           </div>
@@ -84,11 +88,11 @@ export function Home({ onBookSelect }: HomeProps) {
             <div className="rounded-full bg-muted p-6 mb-6">
               <Library className="h-10 w-10 text-muted-foreground/50" />
             </div>
-            <h2 className="font-serif text-2xl font-medium mb-2">
-              Your collection is empty
+            <h2 className="font-serif text-2xl font-medium mb-2 text-balance">
+              Your Collection Is Empty
             </h2>
-            <p className="text-muted-foreground text-sm max-w-xs mb-8">
-              Start building your personal library by adding your first book
+            <p className="text-muted-foreground text-sm max-w-xs mb-8 text-pretty">
+              Start building your personal library by adding your first book.
             </p>
             <Button onClick={() => setIsUploadOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />

@@ -61,21 +61,26 @@ export function UploadModal({ isOpen, onClose, onUpload }: UploadModalProps) {
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4"
           onClick={handleClose}
+          onKeyDown={(e) => { if (e.key === 'Escape') handleClose(); }}
         >
           <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="upload-dialog-title"
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             className="bg-background rounded-lg shadow-xl border w-full max-w-md overflow-hidden"
+            style={{ overscrollBehavior: 'contain' }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b">
-              <h2 className="font-serif text-lg font-medium">
+              <h2 id="upload-dialog-title" className="font-serif text-lg font-medium">
                 {step === 'photo' ? 'Add Book' : 'Book Details'}
               </h2>
-              <Button variant="ghost" size="icon" onClick={handleClose}>
-                <X className="h-4 w-4" />
+              <Button variant="ghost" size="icon" onClick={handleClose} aria-label="Close">
+                <X className="h-4 w-4" aria-hidden="true" />
               </Button>
             </div>
 
@@ -121,8 +126,8 @@ export function UploadModal({ isOpen, onClose, onUpload }: UploadModalProps) {
                     className="hidden"
                   />
 
-                  <p className="text-center text-xs text-muted-foreground">
-                    Take a photo of the book cover
+                  <p className="text-center text-xs text-muted-foreground text-pretty">
+                    Take a photo of the book cover or choose from your gallery.
                   </p>
                 </div>
               ) : (
@@ -131,42 +136,53 @@ export function UploadModal({ isOpen, onClose, onUpload }: UploadModalProps) {
                     <div className="flex justify-center">
                       <img
                         src={preview}
-                        alt="Preview"
+                        alt="Book cover preview"
+                        width={96}
+                        height={144}
                         className="w-24 h-36 object-cover rounded-md shadow-md"
                       />
                     </div>
                   )}
 
                   <div className="space-y-1">
-                    <label className="text-sm font-medium">Title</label>
+                    <label htmlFor="book-title" className="text-sm font-medium">Title</label>
                     <input
+                      id="book-title"
                       type="text"
+                      name="title"
                       value={form.title}
                       onChange={(e) => setForm({ ...form, title: e.target.value })}
-                      placeholder="Book title"
+                      placeholder="e.g. The Great Gatsby…"
                       required
+                      autoComplete="off"
                       className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-sm font-medium">Author</label>
+                    <label htmlFor="book-author" className="text-sm font-medium">Author</label>
                     <input
+                      id="book-author"
                       type="text"
+                      name="author"
                       value={form.author}
                       onChange={(e) => setForm({ ...form, author: e.target.value })}
-                      placeholder="Author name"
+                      placeholder="e.g. F. Scott Fitzgerald…"
+                      autoComplete="off"
                       className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-sm font-medium">Notes</label>
+                    <label htmlFor="book-notes" className="text-sm font-medium">Notes</label>
                     <textarea
+                      id="book-notes"
+                      name="notes"
                       value={form.description}
                       onChange={(e) => setForm({ ...form, description: e.target.value })}
-                      placeholder="Optional notes..."
+                      placeholder="Optional notes…"
                       rows={3}
+                      autoComplete="off"
                       className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none"
                     />
                   </div>
