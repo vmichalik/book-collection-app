@@ -6,6 +6,8 @@ export interface Book {
   coverImage: string;
   spineColor?: string;
   pageColor?: string;
+  favorited?: boolean;
+  genre?: string;
   createdAt: number;
   updatedAt?: number;
 }
@@ -15,4 +17,5 @@ export interface BookFormData {
   author: string;
   description: string;
   coverImage: string;
+  genre?: string;
 }

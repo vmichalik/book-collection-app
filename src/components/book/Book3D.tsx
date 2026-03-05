@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import type { Book } from '@/types/book';
@@ -10,13 +10,16 @@ interface Book3DProps {
   className?: string;
 }
 
-export function Book3D({ 
-  book, 
-  size = 'md', 
+export function Book3D({
+  book,
+  size = 'md',
   autoRotate = true,
-  className 
+  className,
 }: Book3DProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragRotation, setDragRotation] = useState({ x: -4, y: 25 });
+  const dragStart = useRef({ x: 0, y: 0, rotX: 0, rotY: 0 });
 
   const dims = {
     sm: { w: 85, h: 128, d: 18, coverW: 56 },
@@ -27,16 +30,47 @@ export function Book3D({
   const spine = book.spineColor || '#3d3d3d';
   const pages = '#faf8f5';
 
+  const handlePointerDown = useCallback((e: React.PointerEvent) => {
+    setIsDragging(true);
+    dragStart.current = {
+      x: e.clientX,
+      y: e.clientY,
+      rotX: dragRotation.x,
+      rotY: dragRotation.y,
+    };
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  }, [dragRotation]);
+
+  const handlePointerMove = useCallback((e: React.PointerEvent) => {
+    if (!isDragging) return;
+    const dx = e.clientX - dragStart.current.x;
+    const dy = e.clientY - dragStart.current.y;
+    setDragRotation({
+      x: Math.max(-30, Math.min(30, dragStart.current.rotX - dy * 0.5)),
+      y: dragStart.current.rotY + dx * 0.5,
+    });
+  }, [isDragging]);
+
+  const handlePointerUp = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  const useAutoRotate = autoRotate && !isDragging && !isHovered;
+
   return (
-    <div 
-      className={cn("relative flex items-center justify-center", className)}
-      style={{ 
+    <div
+      className={cn('relative flex items-center justify-center select-none', className)}
+      style={{
         width: dims.coverW * 2.2,
         height: dims.h + 50,
         perspective: '1200px',
+        cursor: isDragging ? 'grabbing' : 'grab',
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
     >
       <motion.div
         className="relative"
@@ -45,16 +79,32 @@ export function Book3D({
           height: dims.h,
           transformStyle: 'preserve-3d',
         }}
-        animate={{
-          rotateY: isHovered ? 40 : autoRotate ? [22, 40, 22, 5, 22] : 25,
-          rotateX: isHovered ? -8 : autoRotate ? [-4, -10, -4, -2, -4] : -4,
-          y: isHovered ? -12 : [0, -8, 0],
-        }}
-        transition={{
-          rotateY: { duration: isHovered ? 0.5 : 10, ease: isHovered ? 'easeOut' : 'easeInOut', repeat: isHovered ? 0 : Infinity },
-          rotateX: { duration: isHovered ? 0.5 : 10, ease: isHovered ? 'easeOut' : 'easeInOut', repeat: isHovered ? 0 : Infinity },
-          y: { duration: 3, ease: 'easeInOut', repeat: Infinity },
-        }}
+        animate={
+          isDragging
+            ? { rotateX: dragRotation.x, rotateY: dragRotation.y, y: 0 }
+            : useAutoRotate
+              ? {
+                  rotateY: [22, 40, 22, 5, 22],
+                  rotateX: [-4, -10, -4, -2, -4],
+                  y: [0, -8, 0],
+                }
+              : {
+                  rotateY: isHovered ? 40 : dragRotation.y,
+                  rotateX: isHovered ? -8 : dragRotation.x,
+                  y: isHovered ? -12 : 0,
+                }
+        }
+        transition={
+          isDragging
+            ? { type: 'tween', duration: 0 }
+            : useAutoRotate
+              ? {
+                  rotateY: { duration: 10, ease: 'easeInOut', repeat: Infinity },
+                  rotateX: { duration: 10, ease: 'easeInOut', repeat: Infinity },
+                  y: { duration: 3, ease: 'easeInOut', repeat: Infinity },
+                }
+              : { duration: 0.5, ease: 'easeOut' }
+        }
       >
         {/* Front Cover */}
         <div
@@ -81,7 +131,7 @@ export function Book3D({
               <div className="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-r from-black/40 to-transparent pointer-events-none" />
             </>
           ) : (
-            <div 
+            <div
               className="w-full h-full flex flex-col items-center justify-center p-4 text-center text-white"
               style={{ background: spine }}
             >
@@ -119,16 +169,16 @@ export function Book3D({
             background: `linear-gradient(90deg, ${shade(spine, -35)} 0%, ${spine} 15%, ${spine} 85%, ${shade(spine, -45)} 100%)`,
           }}
         >
-          <p 
+          <p
             className="text-white/90 text-[9px] font-medium tracking-wide"
-            style={{ 
+            style={{
               writingMode: 'vertical-rl',
               textOrientation: 'mixed',
               transform: 'rotate(180deg)',
               textShadow: '0 1px 2px rgba(0,0,0,0.5)',
             }}
           >
-            {book.title.slice(0, 32)}{book.title.length > 32 ? '…' : ''}
+            {book.title.slice(0, 32)}{book.title.length > 32 ? '...' : ''}
           </p>
         </div>
 

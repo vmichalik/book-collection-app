@@ -1,7 +1,9 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import type { Book, BookFormData } from '../types/book';
 
 const STORAGE_KEY = 'book-collection-data';
+
+const MILESTONE_COUNTS = [5, 10, 25, 50, 100];
 
 // Real book covers from Open Library
 const SAMPLE_BOOKS: Book[] = [
@@ -13,6 +15,8 @@ const SAMPLE_BOOKS: Book[] = [
     coverImage: 'https://covers.openlibrary.org/b/id/8264381-L.jpg',
     spineColor: '#2d3436',
     pageColor: '#f5f0e8',
+    genre: 'Classic',
+    favorited: false,
     createdAt: Date.now() - 86400000 * 30,
   },
   {
@@ -23,6 +27,8 @@ const SAMPLE_BOOKS: Book[] = [
     coverImage: 'https://covers.openlibrary.org/b/id/12633933-L.jpg',
     spineColor: '#1a1a2e',
     pageColor: '#f5f5f0',
+    genre: 'Dystopian',
+    favorited: false,
     createdAt: Date.now() - 86400000 * 25,
   },
   {
@@ -33,6 +39,8 @@ const SAMPLE_BOOKS: Book[] = [
     coverImage: 'https://covers.openlibrary.org/b/id/8432027-L.jpg',
     spineColor: '#0c2461',
     pageColor: '#f5f5f0',
+    genre: 'Classic',
+    favorited: false,
     createdAt: Date.now() - 86400000 * 20,
   },
   {
@@ -43,6 +51,8 @@ const SAMPLE_BOOKS: Book[] = [
     coverImage: 'https://covers.openlibrary.org/b/id/8259441-L.jpg',
     spineColor: '#5d4e37',
     pageColor: '#f5f5f0',
+    genre: 'Classic',
+    favorited: false,
     createdAt: Date.now() - 86400000 * 15,
   },
   {
@@ -53,6 +63,8 @@ const SAMPLE_BOOKS: Book[] = [
     coverImage: 'https://covers.openlibrary.org/b/id/8380867-L.jpg',
     spineColor: '#1e3a5f',
     pageColor: '#f5f5f0',
+    genre: 'Adventure',
+    favorited: false,
     createdAt: Date.now() - 86400000 * 10,
   },
   {
@@ -63,6 +75,8 @@ const SAMPLE_BOOKS: Book[] = [
     coverImage: 'https://covers.openlibrary.org/b/id/8225265-L.jpg',
     spineColor: '#b33939',
     pageColor: '#f5f5f0',
+    genre: 'Coming of Age',
+    favorited: false,
     createdAt: Date.now() - 86400000 * 5,
   },
 ];
@@ -70,6 +84,8 @@ const SAMPLE_BOOKS: Book[] = [
 export function useBooks() {
   const [books, setBooks] = useState<Book[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [milestone, setMilestone] = useState<number | null>(null);
+  const prevCountRef = useRef(0);
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -78,12 +94,14 @@ export function useBooks() {
       try {
         const parsed = JSON.parse(stored);
         setBooks(parsed);
+        prevCountRef.current = parsed.length;
       } catch {
         setBooks(SAMPLE_BOOKS);
+        prevCountRef.current = SAMPLE_BOOKS.length;
       }
     } else {
-      // First time user - show sample books
       setBooks(SAMPLE_BOOKS);
+      prevCountRef.current = SAMPLE_BOOKS.length;
     }
     setIsLoaded(true);
   }, []);
@@ -95,6 +113,22 @@ export function useBooks() {
     }
   }, [books, isLoaded]);
 
+  // Check for milestones when count increases
+  useEffect(() => {
+    if (!isLoaded) return;
+    const prev = prevCountRef.current;
+    const curr = books.length;
+    if (curr > prev) {
+      const hit = MILESTONE_COUNTS.find(m => prev < m && curr >= m);
+      if (hit) {
+        setMilestone(hit);
+      }
+    }
+    prevCountRef.current = curr;
+  }, [books.length, isLoaded]);
+
+  const clearMilestone = useCallback(() => setMilestone(null), []);
+
   const addBook = useCallback((data: BookFormData) => {
     const newBook: Book = {
       id: `book-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -102,8 +136,10 @@ export function useBooks() {
       author: data.author || 'Unknown Author',
       description: data.description || '',
       coverImage: data.coverImage,
+      genre: data.genre || undefined,
       spineColor: generateSpineColor(),
       pageColor: '#f5f5f0',
+      favorited: false,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     };
@@ -129,6 +165,16 @@ export function useBooks() {
     return books.find(book => book.id === id);
   }, [books]);
 
+  const toggleFavorite = useCallback((id: string) => {
+    setBooks(prev =>
+      prev.map(book =>
+        book.id === id
+          ? { ...book, favorited: !book.favorited, updatedAt: Date.now() }
+          : book
+      )
+    );
+  }, []);
+
   const getNextBook = useCallback((currentId: string) => {
     const currentIndex = books.findIndex(b => b.id === currentId);
     if (currentIndex === -1) return null;
@@ -144,10 +190,13 @@ export function useBooks() {
   return {
     books,
     isLoaded,
+    milestone,
+    clearMilestone,
     addBook,
     updateBook,
     deleteBook,
     getBook,
+    toggleFavorite,
     getNextBook,
     getPrevBook,
   };
