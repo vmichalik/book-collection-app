@@ -36,7 +36,7 @@ function App() {
   if (!isLoaded) {
     return (
       <div className="min-h-dvh flex items-center justify-center bg-background">
-        <div className="w-6 h-6 border-2 border-muted-foreground/30 border-t-primary rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-muted-foreground/30 border-t-accent rounded-full animate-spin" />
       </div>
     );
   }
@@ -86,7 +86,7 @@ function App() {
 
               {trayType === 'settings' && (
                 <Tray height="60vh" onClose={close}>
-                  <SettingsTray onClose={close} bookCount={books.length} />
+                  <SettingsTray onClose={close} bookCount={books.length} books={books} />
                 </Tray>
               )}
             </>

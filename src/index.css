@@ -5,16 +5,18 @@
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
-  --color-background: #fafafa;
-  --color-foreground: #0a0a0a;
-  --color-muted: #f0f0f0;
-  --color-muted-foreground: #737373;
-  --color-border: #e5e5e5;
-  --color-input: #e5e5e5;
-  --color-ring: #a3a3a3;
+  /* Dark inventory theme */
+  --color-background: #0c0c0e;
+  --color-foreground: #e8e8ec;
+  --color-muted: #1a1a1f;
+  --color-muted-foreground: #6b6b78;
+  --color-border: #26262e;
+  --color-input: #1e1e24;
+  --color-ring: #44444e;
   --color-accent: #ff4d00;
   --color-destructive: #ef4444;
-  --color-card: #ffffff;
+  --color-card: #141418;
+  --color-surface: #111114;
 
   --radius-sm: 4px;
   --radius-md: 6px;
@@ -32,19 +34,14 @@ body {
   font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
 }
 
-/* Shimmer loading animation */
+/* Shimmer loading */
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
 
 .shimmer {
-  background: linear-gradient(
-    90deg,
-    var(--color-muted) 25%,
-    #e8e8e8 50%,
-    var(--color-muted) 75%
-  );
+  background: linear-gradient(90deg, var(--color-muted) 25%, #222228 50%, var(--color-muted) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
 }
@@ -55,38 +52,64 @@ body {
   -webkit-backface-visibility: hidden;
 }
 
-/* Tray overscroll prevention */
+/* Tray overscroll */
 [role="dialog"] {
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
 }
 
-/* Scrollbar — thin, minimal */
-::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+/* Inventory slot glow on hover */
+.inventory-slot {
+  position: relative;
+  transition: transform 0.2s ease;
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
+.inventory-slot::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  opacity: 0.5;
+  transition: all 0.3s ease;
+  pointer-events: none;
+  z-index: 1;
 }
 
-::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.15);
-  border-radius: 2px;
+.inventory-slot:hover::before {
+  border-color: var(--slot-glow, var(--color-border));
+  box-shadow: 0 0 12px 2px color-mix(in srgb, var(--slot-glow, transparent) 30%, transparent),
+              inset 0 0 12px 2px color-mix(in srgb, var(--slot-glow, transparent) 10%, transparent);
+  opacity: 1;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.3);
+.inventory-slot:hover {
+  transform: translateY(-2px);
 }
+
+/* Rarity tag pulse */
+@keyframes rarity-pulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+.rarity-tag {
+  animation: rarity-pulse 2s ease-in-out infinite;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
 
 /* Selection */
 ::selection {
-  background: rgba(255, 77, 0, 0.15);
+  background: rgba(255, 77, 0, 0.3);
   color: var(--color-foreground);
 }
 
-/* Respect reduced motion */
+/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -102,15 +125,12 @@ html {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Tabular nums for rolling digits */
-.tabular-nums {
-  font-variant-numeric: tabular-nums;
-}
+.tabular-nums { font-variant-numeric: tabular-nums; }
 
-/* Form field — shared input style */
+/* Form field */
 .field-input {
   width: 100%;
-  background: var(--color-background);
+  background: var(--color-input);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: 8px 12px;
@@ -118,12 +138,14 @@ html {
   color: var(--color-foreground);
   transition: border-color 0.15s;
 }
+.field-input::placeholder { color: var(--color-muted-foreground); }
+.field-input:focus { outline: none; border-color: var(--color-ring); }
 
-.field-input::placeholder {
-  color: var(--color-muted-foreground);
+/* XP bar */
+@keyframes xp-fill {
+  from { width: 0; }
 }
 
-.field-input:focus {
-  outline: none;
-  border-color: var(--color-foreground);
+.xp-bar {
+  animation: xp-fill 0.8s cubic-bezier(0.19, 1, 0.22, 1) forwards;
 }

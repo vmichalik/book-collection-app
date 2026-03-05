@@ -13,9 +13,8 @@ interface TabBarProps {
 
 export function TabBar({ activeTab, onLibrary, onAdd, onSettings }: TabBarProps) {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-30 bg-background/80 backdrop-blur-md border-t border-border pb-[env(safe-area-inset-bottom)]">
+    <nav className="fixed bottom-0 left-0 right-0 z-30 bg-background/90 backdrop-blur-md border-t border-border pb-[env(safe-area-inset-bottom)]">
       <div className="flex items-center justify-around h-12 max-w-md mx-auto">
-        {/* Library */}
         <button
           onClick={onLibrary}
           className={cn(
@@ -26,23 +25,21 @@ export function TabBar({ activeTab, onLibrary, onAdd, onSettings }: TabBarProps)
           {activeTab === 'library' && (
             <motion.div
               layoutId="tab-indicator"
-              className="absolute bottom-0 left-3 right-3 h-px bg-foreground"
+              className="absolute bottom-0 left-3 right-3 h-px bg-accent"
               transition={{ type: 'spring', stiffness: 400, damping: 30 }}
             />
           )}
-          Library
+          Inventory
         </button>
 
-        {/* Add — center circle */}
         <button
           onClick={onAdd}
-          className="flex items-center justify-center w-10 h-10 -mt-3 rounded-full bg-foreground text-background active:scale-95 transition-transform"
+          className="flex items-center justify-center w-10 h-10 -mt-3 rounded-full bg-accent text-white active:scale-95 transition-transform shadow-[0_0_16px_rgba(255,77,0,0.3)]"
           aria-label="Add Book"
         >
-          <Plus className="h-4 w-4" strokeWidth={2} />
+          <Plus className="h-4 w-4" strokeWidth={2.5} />
         </button>
 
-        {/* Settings */}
         <button
           onClick={onSettings}
           className={cn(
@@ -53,11 +50,11 @@ export function TabBar({ activeTab, onLibrary, onAdd, onSettings }: TabBarProps)
           {activeTab === 'settings' && (
             <motion.div
               layoutId="tab-indicator"
-              className="absolute bottom-0 left-3 right-3 h-px bg-foreground"
+              className="absolute bottom-0 left-3 right-3 h-px bg-accent"
               transition={{ type: 'spring', stiffness: 400, damping: 30 }}
             />
           )}
-          Settings
+          Stats
         </button>
       </div>
     </nav>
