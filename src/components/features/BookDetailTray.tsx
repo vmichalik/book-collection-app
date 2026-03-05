@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Trash2 } from 'lucide-react';
 import { TrayHeader } from '@/components/tray/TrayHeader';
 import { Book3D } from '@/components/book/Book3D';
-import { getRarity } from '@/lib/rarity';
 import type { Book } from '@/types/book';
 
 interface BookDetailTrayProps {
@@ -15,7 +14,6 @@ interface BookDetailTrayProps {
 
 export function BookDetailTray({ book, onClose, onDelete, onToggleFavorite }: BookDetailTrayProps) {
   const [showDelete, setShowDelete] = useState(false);
-  const rarity = getRarity(book.genre);
 
   return (
     <div className="flex flex-col min-h-0">
@@ -35,13 +33,11 @@ export function BookDetailTray({ book, onClose, onDelete, onToggleFavorite }: Bo
           <p className="text-sm text-muted-foreground mb-2">
             {book.author || 'Unknown Author'}
           </p>
-          {/* Rarity badge */}
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border" style={{ borderColor: rarity.color + '40' }}>
-            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: rarity.color }} />
-            <span className="text-[9px] font-mono uppercase tracking-wider" style={{ color: rarity.color }}>
-              {rarity.label}{book.genre ? ` · ${book.genre}` : ''}
+          {book.genre && (
+            <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
+              {book.genre}
             </span>
-          </div>
+          )}
         </div>
 
         {/* Actions */}

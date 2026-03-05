@@ -21,14 +21,18 @@ export function Book3D({
   const [dragRotation, setDragRotation] = useState({ x: -4, y: 25 });
   const dragStart = useRef({ x: 0, y: 0, rotX: 0, rotY: 0 });
 
+  // w = cover width, h = cover height, d = book thickness
   const dims = {
-    sm: { w: 85, h: 128, d: 18, coverW: 56 },
-    md: { w: 130, h: 195, d: 26, coverW: 86 },
-    lg: { w: 170, h: 255, d: 34, coverW: 112 },
+    sm: { w: 70, h: 105, d: 16 },
+    md: { w: 100, h: 150, d: 22 },
+    lg: { w: 140, h: 210, d: 30 },
   }[size];
 
   const spine = book.spineColor || '#3d3d3d';
   const pages = '#faf8f5';
+  const halfD = dims.d / 2;
+  const halfW = dims.w / 2;
+  const halfH = dims.h / 2;
 
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
     setIsDragging(true);
@@ -61,9 +65,9 @@ export function Book3D({
     <div
       className={cn('relative flex items-center justify-center select-none', className)}
       style={{
-        width: dims.coverW * 2.2,
-        height: dims.h + 50,
-        perspective: '1200px',
+        width: dims.w + dims.d + 40,
+        height: dims.h + 40,
+        perspective: '800px',
         cursor: isDragging ? 'grabbing' : 'grab',
       }}
       onMouseEnter={() => setIsHovered(true)}
@@ -106,17 +110,13 @@ export function Book3D({
               : { duration: 0.5, ease: 'easeOut' }
         }
       >
-        {/* Front Cover */}
+        {/* Front Cover — sits at z = +halfD */}
         <div
-          className="book-face absolute overflow-hidden"
+          className="absolute inset-0 overflow-hidden"
           style={{
-            width: dims.coverW,
-            height: dims.h,
-            left: (dims.w - dims.coverW) / 2,
-            transform: `translateZ(${dims.d / 2}px)`,
-            borderRadius: '1px 2px 2px 1px',
+            transform: `translateZ(${halfD}px)`,
+            borderRadius: '1px 3px 3px 1px',
             backfaceVisibility: 'hidden',
-            boxShadow: 'inset 3px 0 6px rgba(0,0,0,0.2)',
           }}
         >
           {book.coverImage ? (
@@ -127,12 +127,12 @@ export function Book3D({
                 className="w-full h-full object-cover"
                 draggable={false}
               />
-              <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-white/5 to-transparent pointer-events-none" />
-              <div className="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-r from-black/40 to-transparent pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-br from-white/25 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-r from-black/30 to-transparent pointer-events-none" />
             </>
           ) : (
             <div
-              className="w-full h-full flex flex-col items-center justify-center p-4 text-center text-white"
+              className="w-full h-full flex flex-col items-center justify-center p-3 text-center text-white"
               style={{ background: spine }}
             >
               <p className="font-serif text-sm leading-tight">{book.title}</p>
@@ -141,36 +141,33 @@ export function Book3D({
           )}
         </div>
 
-        {/* Back Cover */}
+        {/* Back Cover — rotated 180° then pushed out halfD */}
         <div
-          className="book-face absolute"
+          className="absolute inset-0"
           style={{
-            width: dims.coverW,
-            height: dims.h,
-            left: (dims.w - dims.coverW) / 2,
-            transform: `rotateY(180deg) translateZ(${dims.d / 2}px)`,
-            borderRadius: '2px 1px 1px 2px',
+            transform: `rotateY(180deg) translateZ(${halfD}px)`,
+            borderRadius: '3px 1px 1px 3px',
             backfaceVisibility: 'hidden',
             background: `linear-gradient(135deg, ${spine} 0%, ${shade(spine, -25)} 100%)`,
             boxShadow: 'inset -3px 0 10px rgba(0,0,0,0.3)',
           }}
         />
 
-        {/* Spine */}
+        {/* Spine — left edge, rotated -90° then pushed out halfW */}
         <div
-          className="book-face absolute flex items-center justify-center"
+          className="absolute flex items-center justify-center"
           style={{
             width: dims.d,
             height: dims.h,
-            left: (dims.w - dims.coverW) / 2 - dims.d / 2,
-            transform: `rotateY(-90deg) translateZ(${dims.d / 2}px)`,
-            borderRadius: '1px',
+            left: halfW - halfD,
+            top: 0,
+            transform: `rotateY(-90deg) translateZ(${halfW}px)`,
             backfaceVisibility: 'hidden',
             background: `linear-gradient(90deg, ${shade(spine, -35)} 0%, ${spine} 15%, ${spine} 85%, ${shade(spine, -45)} 100%)`,
           }}
         >
           <p
-            className="text-white/90 text-[9px] font-medium tracking-wide"
+            className="text-white/90 text-[8px] font-medium tracking-wide"
             style={{
               writingMode: 'vertical-rl',
               textOrientation: 'mixed',
@@ -178,18 +175,19 @@ export function Book3D({
               textShadow: '0 1px 2px rgba(0,0,0,0.5)',
             }}
           >
-            {book.title.slice(0, 32)}{book.title.length > 32 ? '...' : ''}
+            {book.title.slice(0, 28)}{book.title.length > 28 ? '…' : ''}
           </p>
         </div>
 
-        {/* Pages - Right */}
+        {/* Pages — right edge, rotated 90° then pushed out halfW */}
         <div
-          className="book-face absolute"
+          className="absolute"
           style={{
             width: dims.d - 2,
             height: dims.h - 4,
+            left: halfW - halfD + 1,
             top: 2,
-            transform: `rotateY(90deg) translateZ(${(dims.w - dims.coverW) / 2 + dims.coverW - dims.d / 2 - 1}px)`,
+            transform: `rotateY(90deg) translateZ(${halfW}px)`,
             borderRadius: '0 1px 1px 0',
             backfaceVisibility: 'hidden',
             background: pages,
@@ -198,32 +196,30 @@ export function Book3D({
           }}
         />
 
-        {/* Pages - Top */}
+        {/* Top pages */}
         <div
-          className="book-face absolute"
+          className="absolute"
           style={{
-            width: dims.coverW - 3,
+            width: dims.w - 2,
             height: dims.d - 2,
-            top: -dims.d / 2 + 1,
-            left: (dims.w - dims.coverW) / 2 + 1,
-            transform: `rotateX(90deg) translateZ(${dims.d / 2 - 1}px)`,
-            borderRadius: '1px',
+            left: 1,
+            top: halfH - halfD + 1,
+            transform: `rotateX(90deg) translateZ(${halfH}px)`,
             backfaceVisibility: 'hidden',
             background: pages,
             backgroundImage: `repeating-linear-gradient(0deg, ${pages} 0px, ${pages} 1px, #ebe7e0 1px, #ebe7e0 2px)`,
           }}
         />
 
-        {/* Pages - Bottom */}
+        {/* Bottom pages */}
         <div
-          className="book-face absolute"
+          className="absolute"
           style={{
-            width: dims.coverW - 3,
+            width: dims.w - 2,
             height: dims.d - 2,
-            bottom: -dims.d / 2 + 1,
-            left: (dims.w - dims.coverW) / 2 + 1,
-            transform: `rotateX(-90deg) translateZ(${dims.h - dims.d / 2 + 1}px)`,
-            borderRadius: '1px',
+            left: 1,
+            top: halfH - halfD + 1,
+            transform: `rotateX(-90deg) translateZ(${halfH}px)`,
             backfaceVisibility: 'hidden',
             background: pages,
             backgroundImage: `repeating-linear-gradient(0deg, ${pages} 0px, ${pages} 1px, #ebe7e0 1px, #ebe7e0 2px)`,
@@ -235,13 +231,13 @@ export function Book3D({
       <motion.div
         className="absolute pointer-events-none"
         style={{
-          bottom: 8,
+          bottom: 4,
           left: '50%',
-          width: dims.coverW,
-          height: 20,
+          width: dims.w * 0.8,
+          height: 16,
           background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.4) 0%, transparent 70%)',
-          filter: 'blur(15px)',
-          transform: 'translateX(-50%) rotateX(70deg)',
+          filter: 'blur(12px)',
+          transform: 'translateX(-50%)',
         }}
         animate={{
           scale: isHovered ? [0.9, 1] : [0.8, 0.9, 0.8],

@@ -3,7 +3,6 @@ import { Eye, EyeOff } from 'lucide-react';
 import { TrayHeader } from '@/components/tray/TrayHeader';
 import { useSettings } from '@/hooks/useSettings';
 import { getCollectorLevel } from '@/lib/collector';
-import { getRarity } from '@/lib/rarity';
 
 interface SettingsTrayProps {
   onClose: () => void;
@@ -26,7 +25,7 @@ export function SettingsTray({ onClose, bookCount, books = [] }: SettingsTrayPro
     }
     return Object.entries(counts)
       .sort((a, b) => b[1] - a[1])
-      .map(([genre, count]) => ({ genre, count, rarity: getRarity(genre) }));
+      .map(([genre, count]) => ({ genre, count }));
   }, [books]);
 
   return (
@@ -83,16 +82,10 @@ export function SettingsTray({ onClose, bookCount, books = [] }: SettingsTrayPro
               Collection breakdown
             </p>
             <div className="space-y-2">
-              {genreBreakdown.map(({ genre, count, rarity }) => (
+              {genreBreakdown.map(({ genre, count }) => (
                 <div key={genre} className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: rarity.color }} />
-                    <span className="text-xs">{genre}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[9px] font-mono uppercase" style={{ color: rarity.color }}>{rarity.label}</span>
-                    <span className="text-xs font-mono text-muted-foreground tabular-nums">{count}</span>
-                  </div>
+                  <span className="text-xs">{genre}</span>
+                  <span className="text-xs font-mono text-muted-foreground tabular-nums">{count}</span>
                 </div>
               ))}
             </div>
