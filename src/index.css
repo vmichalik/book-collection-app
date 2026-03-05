@@ -61,7 +61,6 @@
 
 .book-3d {
   transform-style: preserve-3d;
-  will-change: transform;
 }
 
 .book-face {
@@ -92,4 +91,22 @@
 ::selection {
   background: hsl(var(--primary) / 0.2);
   color: hsl(var(--foreground));
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Touch optimization */
+html {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }

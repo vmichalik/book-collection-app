@@ -14,14 +14,16 @@ export function BookCard({ book, onClick, index = 0 }: BookCardProps) {
   const [error, setError] = useState(false);
 
   return (
-    <motion.div
+    <motion.button
+      type="button"
       layoutId={`book-${book.id}`}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.4, delay: index * 0.05, ease: [0.25, 0.1, 0.25, 1] }}
       onClick={onClick}
-      className="group cursor-pointer"
+      aria-label={`View ${book.title} by ${book.author}`}
+      className="group cursor-pointer text-left w-full"
     >
       {/* Cover */}
       <div className={cn(
@@ -36,7 +38,10 @@ export function BookCard({ book, onClick, index = 0 }: BookCardProps) {
         {book.coverImage && !error ? (
           <img
             src={book.coverImage}
-            alt={book.title}
+            alt={`Cover of ${book.title}`}
+            loading="lazy"
+            width={200}
+            height={300}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             onLoad={() => setLoaded(true)}
             onError={() => setError(true)}
@@ -62,6 +67,6 @@ export function BookCard({ book, onClick, index = 0 }: BookCardProps) {
           {book.author}
         </p>
       </div>
-    </motion.div>
+    </motion.button>
   );
 }
