@@ -18,15 +18,16 @@ export function Book3D({
   className = '' 
 }: Book3DProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [rotation, setRotation] = useState({ x: -15, y: 25 });
+  const [rotation, setRotation] = useState({ x: -5, y: 20 });
   const [isDragging, setIsDragging] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const dragStart = useRef({ x: 0, y: 0 });
-  const startRotation = useRef({ x: -15, y: 25 });
+  const startRotation = useRef({ x: -5, y: 20 });
 
   const dimensions = {
-    small: { width: 100, height: 150, depth: 20 },
-    medium: { width: 160, height: 240, depth: 30 },
-    large: { width: 220, height: 330, depth: 40 },
+    small: { width: 85, height: 130, depth: 18, spine: 12 },
+    medium: { width: 140, height: 210, depth: 28, spine: 18 },
+    large: { width: 200, height: 300, depth: 38, spine: 24 },
   }[size];
 
   // Auto rotation effect
@@ -36,7 +37,7 @@ export function Book3D({
     let angle = 0;
     const interval = setInterval(() => {
       angle += 0.5;
-      setRotation({ x: -15, y: 25 + Math.sin(angle * 0.02) * 20 });
+      setRotation({ x: -5, y: 20 + Math.sin(angle * 0.02) * 15 });
     }, 16);
     
     return () => clearInterval(interval);
@@ -64,8 +65,8 @@ export function Book3D({
     const deltaY = clientY - dragStart.current.y;
     
     setRotation({
-      x: Math.max(-45, Math.min(45, startRotation.current.x - deltaY * 0.5)),
-      y: startRotation.current.y + deltaX * 0.5,
+      x: Math.max(-25, Math.min(25, startRotation.current.x - deltaY * 0.3)),
+      y: startRotation.current.y + deltaX * 0.4,
     });
   };
 
@@ -79,8 +80,8 @@ export function Book3D({
       className={`book-3d-container ${className}`}
       style={{ 
         width: dimensions.width, 
-        height: dimensions.height,
-        perspective: '1000px',
+        height: dimensions.height + 20,
+        perspective: '1200px',
       }}
       onMouseDown={handleTouchStart}
       onMouseMove={handleTouchMove}
@@ -98,7 +99,7 @@ export function Book3D({
         }}
         transition={{
           type: isDragging ? 'tween' : 'spring',
-          stiffness: 200,
+          stiffness: 180,
           damping: 20,
         }}
         style={{
@@ -116,35 +117,43 @@ export function Book3D({
             width: dimensions.width,
             height: dimensions.height,
             transform: `translateZ(${dimensions.depth / 2}px)`,
-            borderRadius: '4px 8px 8px 4px',
+            borderRadius: '2px 6px 6px 2px',
             overflow: 'hidden',
-            boxShadow: 'inset 4px 0 10px rgba(0,0,0,0.1)',
+            background: book.spineColor || '#1a1a2e',
           }}
         >
           {book.coverImage ? (
-            <img
-              src={book.coverImage}
-              alt={book.title}
-              className="w-full h-full object-cover"
-              draggable={false}
-            />
+            <>
+              <img
+                src={book.coverImage}
+                alt={book.title}
+                className="w-full h-full object-cover"
+                draggable={false}
+                onLoad={() => setImageLoaded(true)}
+                style={{ opacity: imageLoaded ? 1 : 0, transition: 'opacity 0.3s' }}
+              />
+              {!imageLoaded && (
+                <div 
+                  className="absolute inset-0 animate-pulse"
+                  style={{ background: book.spineColor || '#1a1a2e' }}
+                />
+              )}
+            </>
           ) : (
             <div 
-              className="w-full h-full flex items-center justify-center p-4 text-center"
+              className="w-full h-full flex flex-col items-center justify-center p-4 text-center"
               style={{ background: book.spineColor || '#1a1a2e' }}
             >
-              <div>
-                <p className="text-white font-bold text-sm leading-tight">{book.title}</p>
-                <p className="text-white/70 text-xs mt-1">{book.author}</p>
-              </div>
+              <p className="text-white font-bold text-sm leading-tight line-clamp-3">{book.title}</p>
+              <p className="text-white/60 text-xs mt-2">{book.author}</p>
             </div>
           )}
-          {/* Cover shine effect */}
+          {/* Cover lighting */}
           <div 
             className="absolute inset-0 pointer-events-none"
             style={{
-              background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 50%, rgba(0,0,0,0.1) 100%)',
-              borderRadius: '4px 8px 8px 4px',
+              background: 'linear-gradient(115deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 30%, transparent 50%, rgba(0,0,0,0.1) 100%)',
+              borderRadius: '2px 6px 6px 2px',
             }}
           />
         </div>
@@ -158,7 +167,7 @@ export function Book3D({
             height: dimensions.height,
             transform: `rotateY(180deg) translateZ(${dimensions.depth / 2}px)`,
             background: book.spineColor || '#1a1a2e',
-            borderRadius: '8px 4px 4px 8px',
+            borderRadius: '6px 2px 2px 6px',
           }}
         />
 
@@ -172,36 +181,45 @@ export function Book3D({
             transform: `rotateY(-90deg) translateZ(${dimensions.depth / 2}px)`,
             background: book.spineColor || '#1a1a2e',
             left: -dimensions.depth / 2,
-            borderRadius: '4px',
+            borderRadius: '2px',
+            backgroundImage: `linear-gradient(90deg, rgba(255,255,255,0.1) 0%, transparent 20%, transparent 80%, rgba(0,0,0,0.2) 100%)`,
           }}
         >
           <div className="w-full h-full flex items-center justify-center px-1">
             <p 
-              className="text-white text-xs font-medium whitespace-nowrap"
+              className="text-white/90 text-xs font-medium whitespace-nowrap tracking-wide"
               style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
             >
-              {book.title.length > 30 ? book.title.slice(0, 30) + '...' : book.title}
+              {book.title.length > 35 ? book.title.slice(0, 35) + '...' : book.title}
             </p>
           </div>
         </div>
 
-        {/* Pages (right edge) */}
+        {/* Pages - Right edge */}
         <div
           className="book-face book-pages-right"
           style={{
             position: 'absolute',
             width: dimensions.depth - 4,
-            height: dimensions.height - 8,
+            height: dimensions.height - 6,
             transform: `rotateY(90deg) translateZ(${dimensions.width - dimensions.depth / 2}px)`,
             background: book.pageColor || '#f5f5f0',
-            top: 4,
+            top: 3,
             right: -dimensions.depth / 2 + 2,
-            backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 1px, rgba(0,0,0,0.03) 1px, rgba(0,0,0,0.03) 2px)',
-            borderRadius: '2px',
+            backgroundImage: `
+              repeating-linear-gradient(90deg, 
+                #f5f5f0 0px, 
+                #f5f5f0 1px, 
+                #e8e8e0 1px, 
+                #e8e8e0 2px
+              )
+            `,
+            borderRadius: '1px',
+            boxShadow: 'inset 0 0 5px rgba(0,0,0,0.1)',
           }}
         />
 
-        {/* Pages (top edge) */}
+        {/* Pages - Top edge */}
         <div
           className="book-face book-pages-top"
           style={{
@@ -212,12 +230,19 @@ export function Book3D({
             background: book.pageColor || '#f5f5f0',
             top: -dimensions.depth / 2 + 2,
             left: 2,
-            backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0,0,0,0.03) 1px, rgba(0,0,0,0.03) 2px)',
-            borderRadius: '2px',
+            backgroundImage: `
+              repeating-linear-gradient(0deg, 
+                #f5f5f0 0px, 
+                #f5f5f0 1px, 
+                #e8e8e0 1px, 
+                #e8e8e0 2px
+              )
+            `,
+            borderRadius: '1px',
           }}
         />
 
-        {/* Pages (bottom edge) */}
+        {/* Pages - Bottom edge */}
         <div
           className="book-face book-pages-bottom"
           style={{
@@ -228,35 +253,44 @@ export function Book3D({
             background: book.pageColor || '#f5f5f0',
             bottom: -dimensions.depth / 2 + 2,
             left: 2,
-            backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0,0,0,0.03) 1px, rgba(0,0,0,0.03) 2px)',
-            borderRadius: '2px',
+            backgroundImage: `
+              repeating-linear-gradient(0deg, 
+                #f5f5f0 0px, 
+                #f5f5f0 1px, 
+                #e8e8e0 1px, 
+                #e8e8e0 2px
+              )
+            `,
+            borderRadius: '1px',
           }}
         />
       </motion.div>
 
-      {/* Shadow */}
+      {/* Soft shadow */}
       <div
         className="book-shadow"
         style={{
           position: 'absolute',
-          bottom: -dimensions.depth / 2,
-          left: '10%',
-          width: '80%',
-          height: '20px',
-          background: 'radial-gradient(ellipse, rgba(0,0,0,0.3) 0%, transparent 70%)',
-          transform: `rotateX(90deg) translateZ(-${dimensions.height / 2}px)`,
-          filter: 'blur(8px)',
-          opacity: isDragging ? 0.6 : 1,
+          bottom: -8,
+          left: '50%',
+          width: dimensions.width * 0.8,
+          height: 16,
+          background: 'radial-gradient(ellipse, rgba(0,0,0,0.25) 0%, transparent 70%)',
+          transform: `translateX(-50%) rotateX(90deg)`,
+          filter: 'blur(12px)',
+          opacity: isDragging ? 0.4 : 0.7,
           transition: 'opacity 0.3s ease',
+          pointerEvents: 'none',
         }}
       />
 
       {/* Interactive hint */}
-      {interactive && !isDragging && (
+      {interactive && !isDragging && size === 'large' && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-xs text-white/40 whitespace-nowrap"
+          transition={{ delay: 1 }}
+          className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs text-white/30 whitespace-nowrap"
         >
           Drag to rotate
         </motion.div>

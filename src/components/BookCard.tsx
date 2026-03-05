@@ -12,63 +12,50 @@ export function BookCard({ book, onClick, index = 0 }: BookCardProps) {
   return (
     <motion.div
       layoutId={`book-card-${book.id}`}
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{
         type: 'spring',
-        stiffness: 300,
-        damping: 25,
-        delay: index * 0.05,
+        stiffness: 400,
+        damping: 30,
+        delay: index * 0.06,
       }}
-      whileHover={{ scale: 1.02, y: -4 }}
-      whileTap={{ scale: 0.98 }}
+      whileHover={{ y: -8, transition: { duration: 0.2 } }}
+      whileTap={{ scale: 0.97, transition: { duration: 0.1 } }}
       onClick={onClick}
       className="book-card group cursor-pointer"
     >
-      {/* Card Container with premium glass effect */}
-      <div className="relative bg-white/5 backdrop-blur-xl rounded-3xl overflow-hidden border border-white/10 shadow-2xl shadow-black/20">
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
+      {/* Card with elevated premium feel */}
+      <div className="relative bg-gradient-to-b from-white/[0.08] to-white/[0.02] backdrop-blur-xl rounded-2xl overflow-hidden border border-white/[0.06] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+        {/* Subtle top highlight */}
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
         
-        {/* Glow effect on hover */}
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-          <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 via-transparent to-cyan-500/10" />
+        {/* Hover glow */}
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+          <div className="absolute inset-0 bg-gradient-to-br from-violet-500/[0.08] via-transparent to-cyan-500/[0.08]" />
         </div>
 
         {/* 3D Book Display */}
-        <div className="relative p-6 pb-4 flex justify-center">
+        <div className="relative pt-6 pb-4 flex justify-center">
           <Book3D book={book} size="small" autoRotate={false} />
         </div>
 
         {/* Book Info */}
-        <div className="relative px-5 pb-5">
+        <div className="relative px-4 pb-5">
           <motion.h3 
-            className="font-semibold text-white text-base leading-tight line-clamp-2"
+            className="font-semibold text-[15px] leading-snug text-white/95 line-clamp-2"
             layoutId={`book-title-${book.id}`}
           >
             {book.title}
           </motion.h3>
           <motion.p 
-            className="text-white/50 text-sm mt-1"
+            className="text-white/45 text-[13px] mt-1.5 font-medium"
             layoutId={`book-author-${book.id}`}
           >
             {book.author}
           </motion.p>
-          
-          {/* Date badge */}
-          <div className="flex items-center gap-2 mt-3">
-            <span className="text-xs text-white/30">
-              Added {new Date(book.createdAt).toLocaleDateString('en-US', { 
-                month: 'short', 
-                day: 'numeric' 
-              })}
-            </span>
-          </div>
         </div>
-
-        {/* Bottom accent line */}
-        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
     </motion.div>
   );
