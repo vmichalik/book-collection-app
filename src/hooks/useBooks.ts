@@ -16,6 +16,7 @@ const SAMPLE_BOOKS: Book[] = [
     spineColor: '#2d3436',
     pageColor: '#f5f0e8',
     genre: 'Classic',
+    pages: 432,
     favorited: false,
     createdAt: Date.now() - 86400000 * 30,
   },
@@ -28,6 +29,7 @@ const SAMPLE_BOOKS: Book[] = [
     spineColor: '#1a1a2e',
     pageColor: '#f5f5f0',
     genre: 'Dystopian',
+    pages: 328,
     favorited: false,
     createdAt: Date.now() - 86400000 * 25,
   },
@@ -40,6 +42,7 @@ const SAMPLE_BOOKS: Book[] = [
     spineColor: '#0c2461',
     pageColor: '#f5f5f0',
     genre: 'Classic',
+    pages: 180,
     favorited: false,
     createdAt: Date.now() - 86400000 * 20,
   },
@@ -52,6 +55,7 @@ const SAMPLE_BOOKS: Book[] = [
     spineColor: '#5d4e37',
     pageColor: '#f5f5f0',
     genre: 'Classic',
+    pages: 336,
     favorited: false,
     createdAt: Date.now() - 86400000 * 15,
   },
@@ -64,6 +68,7 @@ const SAMPLE_BOOKS: Book[] = [
     spineColor: '#1e3a5f',
     pageColor: '#f5f5f0',
     genre: 'Adventure',
+    pages: 720,
     favorited: false,
     createdAt: Date.now() - 86400000 * 10,
   },
@@ -76,6 +81,7 @@ const SAMPLE_BOOKS: Book[] = [
     spineColor: '#b33939',
     pageColor: '#f5f5f0',
     genre: 'Coming of Age',
+    pages: 234,
     favorited: false,
     createdAt: Date.now() - 86400000 * 5,
   },
@@ -109,7 +115,12 @@ export function useBooks() {
   // Save to localStorage whenever books change
   useEffect(() => {
     if (isLoaded) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(books));
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(books));
+      } catch {
+        // QuotaExceededError — storage full, silently skip persist
+        console.warn('localStorage quota exceeded, data not saved');
+      }
     }
   }, [books, isLoaded]);
 
@@ -136,7 +147,10 @@ export function useBooks() {
       author: data.author || 'Unknown Author',
       description: data.description || '',
       coverImage: data.coverImage,
+      spineImage: data.spineImage || undefined,
+      backImage: data.backImage || undefined,
       genre: data.genre || undefined,
+      pages: data.pages || undefined,
       spineColor: generateSpineColor(),
       pageColor: '#f5f5f0',
       favorited: false,

@@ -1,13 +1,15 @@
 import { useState, useMemo } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Download, ExternalLink } from 'lucide-react';
 import { TrayHeader } from '@/components/tray/TrayHeader';
 import { useSettings } from '@/hooks/useSettings';
 import { getCollectorLevel } from '@/lib/collector';
+import { exportLibrary } from '@/lib/export-library';
+import type { Book } from '@/types/book';
 
 interface SettingsTrayProps {
   onClose: () => void;
   bookCount: number;
-  books?: { genre?: string; favorited?: boolean }[];
+  books?: Book[];
 }
 
 export function SettingsTray({ onClose, bookCount, books = [] }: SettingsTrayProps) {
@@ -139,6 +141,34 @@ export function SettingsTray({ onClose, bookCount, books = [] }: SettingsTrayPro
               }`} />
             </button>
           </label>
+        </div>
+
+        {/* Publish Shelf */}
+        <div className="border-t border-border pt-5 mt-5">
+          <p className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground mb-1.5">
+            Public Shelf
+          </p>
+          <p className="text-[11px] text-muted-foreground mb-3">
+            Export your collection as a shareable page friends can visit.
+          </p>
+          <button
+            onClick={() => exportLibrary(books as Book[])}
+            disabled={bookCount === 0}
+            className="w-full flex items-center justify-center gap-2 rounded-lg border border-border bg-surface px-3 py-2.5 text-xs font-medium hover:border-accent/50 transition-colors disabled:opacity-40 disabled:pointer-events-none"
+          >
+            <Download className="w-3.5 h-3.5" />
+            Download library.json
+          </button>
+          <p className="text-[10px] text-muted-foreground mt-2">
+            Drop the file in your project's <span className="font-mono">public/</span> folder and redeploy.
+          </p>
+          <a
+            href="#/shelf"
+            className="inline-flex items-center gap-1 text-[10px] font-mono text-accent hover:underline mt-1.5"
+          >
+            <ExternalLink className="w-3 h-3" />
+            Preview shelf
+          </a>
         </div>
 
         <div className="border-t border-border pt-5 mt-5 text-center">

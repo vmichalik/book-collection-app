@@ -10,9 +10,10 @@ interface BookDetailTrayProps {
   onClose: () => void;
   onDelete: (id: string) => void;
   onToggleFavorite: (id: string) => void;
+  readOnly?: boolean;
 }
 
-export function BookDetailTray({ book, onClose, onDelete, onToggleFavorite }: BookDetailTrayProps) {
+export function BookDetailTray({ book, onClose, onDelete, onToggleFavorite, readOnly }: BookDetailTrayProps) {
   const [showDelete, setShowDelete] = useState(false);
 
   return (
@@ -41,26 +42,28 @@ export function BookDetailTray({ book, onClose, onDelete, onToggleFavorite }: Bo
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-center gap-2 mb-6">
-          <button
-            onClick={() => onToggleFavorite(book.id)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-              book.favorited
-                ? 'bg-accent text-white'
-                : 'bg-muted text-foreground hover:bg-border'
-            }`}
-          >
-            <Heart className={`h-3.5 w-3.5 ${book.favorited ? 'fill-current' : ''}`} />
-            {book.favorited ? 'Favorited' : 'Favorite'}
-          </button>
-          <button
-            onClick={() => setShowDelete(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-muted text-muted-foreground hover:text-destructive transition-colors"
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-            Discard
-          </button>
-        </div>
+        {!readOnly && (
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <button
+              onClick={() => onToggleFavorite(book.id)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                book.favorited
+                  ? 'bg-accent text-white'
+                  : 'bg-muted text-foreground hover:bg-border'
+              }`}
+            >
+              <Heart className={`h-3.5 w-3.5 ${book.favorited ? 'fill-current' : ''}`} />
+              {book.favorited ? 'Favorited' : 'Favorite'}
+            </button>
+            <button
+              onClick={() => setShowDelete(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-muted text-muted-foreground hover:text-destructive transition-colors"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              Discard
+            </button>
+          </div>
+        )}
 
         {/* Meta */}
         <div className="space-y-2 mb-6 rounded-lg border border-border bg-surface p-3">
@@ -68,6 +71,12 @@ export function BookDetailTray({ book, onClose, onDelete, onToggleFavorite }: Bo
             <div className="flex items-center justify-between text-xs">
               <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Genre</span>
               <span>{book.genre}</span>
+            </div>
+          )}
+          {book.pages && (
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Pages</span>
+              <span>{book.pages}</span>
             </div>
           )}
           <div className="flex items-center justify-between text-xs">

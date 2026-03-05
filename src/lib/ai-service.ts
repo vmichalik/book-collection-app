@@ -9,7 +9,6 @@ export async function recognizeBook(
   imageBase64: string,
   apiKey: string
 ): Promise<AIBookResult> {
-  // Strip data URL prefix if present
   const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
   const mediaType = imageBase64.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
 
@@ -63,7 +62,6 @@ If you cannot determine a field, use an empty string.`,
   const data = await response.json();
   const text = data.content?.[0]?.text || '';
 
-  // Parse JSON from response
   const jsonMatch = text.match(/\{[\s\S]*\}/);
   if (!jsonMatch) {
     throw new Error('Could not parse AI response');

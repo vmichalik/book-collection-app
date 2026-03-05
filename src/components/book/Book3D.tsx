@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import type { Book } from '@/types/book';
@@ -10,6 +10,26 @@ interface Book3DProps {
   className?: string;
 }
 
+// Compute pixel dimensions from page count, cover aspect ratio, and scale.
+// Height is fixed per scale, width adapts to the cover image's aspect ratio,
+// depth scales with page count.
+function getBookDims(pages: number, scale: number, coverRatio: number) {
+  const baseH = 150;
+  const h = Math.round(baseH * scale);
+  const w = Math.round(h * coverRatio);
+
+  const minD = 10 * scale;
+  const maxD = 45 * scale;
+  const pxPerPage = (maxD - minD) / 700;
+  const rawD = minD + (pages - 100) * pxPerPage;
+  const d = Math.round(Math.max(minD, Math.min(maxD, rawD)));
+
+  return { w, h, d };
+}
+
+const SCALE_MAP = { sm: 0.6, md: 0.85, lg: 1.2 } as const;
+const DEFAULT_RATIO = 0.67;
+
 export function Book3D({
   book,
   size = 'md',
@@ -20,13 +40,23 @@ export function Book3D({
   const [isDragging, setIsDragging] = useState(false);
   const [dragRotation, setDragRotation] = useState({ x: -4, y: 25 });
   const dragStart = useRef({ x: 0, y: 0, rotX: 0, rotY: 0 });
+  const [coverRatio, setCoverRatio] = useState(DEFAULT_RATIO);
 
-  // w = cover width, h = cover height, d = book thickness
-  const dims = {
-    sm: { w: 70, h: 105, d: 16 },
-    md: { w: 100, h: 150, d: 22 },
-    lg: { w: 140, h: 210, d: 30 },
-  }[size];
+  // Load cover image to detect its natural aspect ratio
+  useEffect(() => {
+    if (!book.coverImage) return;
+    const img = new Image();
+    img.onload = () => {
+      const ratio = img.naturalWidth / img.naturalHeight;
+      // Clamp to reasonable book proportions (0.5 to 0.85)
+      setCoverRatio(Math.max(0.5, Math.min(0.85, ratio)));
+    };
+    img.src = book.coverImage;
+  }, [book.coverImage]);
+
+  const pageCount = book.pages || 250;
+  const scale = SCALE_MAP[size];
+  const dims = useMemo(() => getBookDims(pageCount, scale, coverRatio), [pageCount, scale, coverRatio]);
 
   const spine = book.spineColor || '#3d3d3d';
   const pages = '#faf8f5';
@@ -110,7 +140,7 @@ export function Book3D({
               : { duration: 0.5, ease: 'easeOut' }
         }
       >
-        {/* Front Cover — sits at z = +halfD */}
+        {/* Front Cover */}
         <div
           className="absolute inset-0 overflow-hidden"
           style={{
@@ -124,7 +154,7 @@ export function Book3D({
               <img
                 src={book.coverImage}
                 alt={book.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full"
                 draggable={false}
               />
               <div className="absolute inset-0 bg-gradient-to-br from-white/25 via-transparent to-transparent pointer-events-none" />
@@ -141,21 +171,36 @@ export function Book3D({
           )}
         </div>
 
-        {/* Back Cover — rotated 180° then pushed out halfD */}
+        {/* Back Cover */}
         <div
-          className="absolute inset-0"
+          className="absolute inset-0 overflow-hidden"
           style={{
             transform: `rotateY(180deg) translateZ(${halfD}px)`,
             borderRadius: '3px 1px 1px 3px',
             backfaceVisibility: 'hidden',
-            background: `linear-gradient(135deg, ${spine} 0%, ${shade(spine, -25)} 100%)`,
-            boxShadow: 'inset -3px 0 10px rgba(0,0,0,0.3)',
+            ...(!book.backImage ? {
+              background: `linear-gradient(135deg, ${spine} 0%, ${shade(spine, -25)} 100%)`,
+              boxShadow: 'inset -3px 0 10px rgba(0,0,0,0.3)',
+            } : {}),
           }}
-        />
+        >
+          {book.backImage && (
+            <>
+              <img
+                src={book.backImage}
+                alt={`${book.title} back`}
+                className="w-full h-full"
+                draggable={false}
+              />
+              <div className="absolute inset-0 bg-gradient-to-bl from-white/15 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute right-0 top-0 bottom-0 w-2 bg-gradient-to-l from-black/30 to-transparent pointer-events-none" />
+            </>
+          )}
+        </div>
 
-        {/* Spine — left edge, rotated -90° then pushed out halfW */}
+        {/* Spine — left edge */}
         <div
-          className="absolute flex items-center justify-center"
+          className="absolute overflow-hidden"
           style={{
             width: dims.d,
             height: dims.h,
@@ -163,23 +208,42 @@ export function Book3D({
             top: 0,
             transform: `rotateY(-90deg) translateZ(${halfW}px)`,
             backfaceVisibility: 'hidden',
-            background: `linear-gradient(90deg, ${shade(spine, -35)} 0%, ${spine} 15%, ${spine} 85%, ${shade(spine, -45)} 100%)`,
+            ...(!book.spineImage ? {
+              background: `linear-gradient(90deg, ${shade(spine, -35)} 0%, ${spine} 15%, ${spine} 85%, ${shade(spine, -45)} 100%)`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            } : {}),
           }}
         >
-          <p
-            className="text-white/90 text-[8px] font-medium tracking-wide"
-            style={{
-              writingMode: 'vertical-rl',
-              textOrientation: 'mixed',
-              transform: 'rotate(180deg)',
-              textShadow: '0 1px 2px rgba(0,0,0,0.5)',
-            }}
-          >
-            {book.title.slice(0, 28)}{book.title.length > 28 ? '…' : ''}
-          </p>
+          {book.spineImage ? (
+            <>
+              <img
+                src={book.spineImage}
+                alt={`${book.title} spine`}
+                className="w-full h-full object-cover"
+                draggable={false}
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-black/20 pointer-events-none" />
+            </>
+          ) : (
+            <p
+              className="text-white/90 font-medium tracking-wide overflow-hidden"
+              style={{
+                writingMode: 'vertical-rl',
+                textOrientation: 'mixed',
+                transform: 'rotate(180deg)',
+                textShadow: '0 1px 2px rgba(0,0,0,0.5)',
+                fontSize: `${Math.max(7, Math.min(10, dims.d * 0.4))}px`,
+                maxHeight: dims.h - 8,
+              }}
+            >
+              {book.title.slice(0, 32)}{book.title.length > 32 ? '…' : ''}
+            </p>
+          )}
         </div>
 
-        {/* Pages — right edge, rotated 90° then pushed out halfW */}
+        {/* Pages — right edge */}
         <div
           className="absolute"
           style={{
