@@ -38,10 +38,10 @@ export function Home({ onBookSelect }: HomeProps) {
   }
 
   return (
-    <div className="min-h-screen bg-[#f7f5f2] pb-32">
+    <div className="min-h-screen bg-[#f7f5f2]">
       {/* Elegant Header */}
       <header className="sticky top-0 z-10 bg-[#f7f5f2]/95 backdrop-blur-md border-b border-black/[0.06]">
-        <div className="max-w-6xl mx-auto px-6 sm:px-8 py-5">
+        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-5">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <motion.div
@@ -52,7 +52,7 @@ export function Home({ onBookSelect }: HomeProps) {
               <h1 className="font-serif text-2xl sm:text-3xl font-medium text-[#1a1a1a] tracking-tight">
                 Library
               </h1>
-              <span className="text-[#999999] text-sm font-light">
+              <span className="text-[#999999] text-sm font-light hidden sm:inline">
                 {books.length} volumes
               </span>
             </motion.div>
@@ -91,9 +91,9 @@ export function Home({ onBookSelect }: HomeProps) {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-6 sm:px-8 pt-10">
+      <main className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-12">
         {books.length === 0 ? (
-          /* Empty State - Elegant */
+          /* Empty State */
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -129,8 +129,8 @@ export function Home({ onBookSelect }: HomeProps) {
             </p>
           </motion.div>
         ) : (
-          /* Book Grid - Editorial Style */
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10">
+          /* Book Grid - Masonry-style editorial layout */
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-6 gap-y-10">
             <AnimatePresence mode="popLayout">
               {filteredBooks.map((book, index) => (
                 <BookCard

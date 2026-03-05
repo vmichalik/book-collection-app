@@ -3,15 +3,15 @@ import type { Book, BookFormData } from '../types/book';
 
 const STORAGE_KEY = 'book-collection-data';
 
-// Sample books with Unsplash cover images (reliable)
+// Real book covers from Open Library
 const SAMPLE_BOOKS: Book[] = [
   {
     id: 'sample-1',
     title: 'Pride and Prejudice',
     author: 'Jane Austen',
     description: 'A romantic novel of manners that follows the character development of Elizabeth Bennet, who learns about the repercussions of hasty judgments.',
-    coverImage: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=600&fit=crop',
-    spineColor: '#4a3f35',
+    coverImage: 'https://covers.openlibrary.org/b/id/8264381-L.jpg',
+    spineColor: '#2d3436',
     pageColor: '#f5f0e8',
     createdAt: Date.now() - 86400000 * 30,
   },
@@ -20,8 +20,8 @@ const SAMPLE_BOOKS: Book[] = [
     title: '1984',
     author: 'George Orwell',
     description: 'A dystopian social science fiction novel about the dangers of totalitarianism, mass surveillance, and repressive regimentation.',
-    coverImage: 'https://images.unsplash.com/photo-1541963463532-d68292c34b19?w=400&h=600&fit=crop',
-    spineColor: '#1a1a1a',
+    coverImage: 'https://covers.openlibrary.org/b/id/12633933-L.jpg',
+    spineColor: '#1a1a2e',
     pageColor: '#f5f5f0',
     createdAt: Date.now() - 86400000 * 25,
   },
@@ -30,8 +30,8 @@ const SAMPLE_BOOKS: Book[] = [
     title: 'The Great Gatsby',
     author: 'F. Scott Fitzgerald',
     description: 'A tragedy set in the Jazz Age following mysterious millionaire Jay Gatsby and his pursuit of his former love Daisy Buchanan.',
-    coverImage: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&h=600&fit=crop',
-    spineColor: '#1e3a5f',
+    coverImage: 'https://covers.openlibrary.org/b/id/8432027-L.jpg',
+    spineColor: '#0c2461',
     pageColor: '#f5f5f0',
     createdAt: Date.now() - 86400000 * 20,
   },
@@ -40,7 +40,7 @@ const SAMPLE_BOOKS: Book[] = [
     title: 'To Kill a Mockingbird',
     author: 'Harper Lee',
     description: 'A novel about serious issues of rape and racial inequality, told through the eyes of young Scout Finch in the Deep South.',
-    coverImage: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=400&h=600&fit=crop',
+    coverImage: 'https://covers.openlibrary.org/b/id/8259441-L.jpg',
     spineColor: '#5d4e37',
     pageColor: '#f5f5f0',
     createdAt: Date.now() - 86400000 * 15,
@@ -50,8 +50,8 @@ const SAMPLE_BOOKS: Book[] = [
     title: 'Moby Dick',
     author: 'Herman Melville',
     description: 'The narrative of sailor Ishmael and Captain Ahab\'s obsessive quest for revenge on the giant white sperm whale.',
-    coverImage: 'https://images.unsplash.com/photo-1495640388908-05fa85288e61?w=400&h=600&fit=crop',
-    spineColor: '#0f4c75',
+    coverImage: 'https://covers.openlibrary.org/b/id/8380867-L.jpg',
+    spineColor: '#1e3a5f',
     pageColor: '#f5f5f0',
     createdAt: Date.now() - 86400000 * 10,
   },
@@ -60,8 +60,8 @@ const SAMPLE_BOOKS: Book[] = [
     title: 'The Catcher in the Rye',
     author: 'J.D. Salinger',
     description: 'A story about teenage angst and alienation as told by Holden Caulfield, exploring themes of innocence and identity.',
-    coverImage: 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=400&h=600&fit=crop',
-    spineColor: '#722f37',
+    coverImage: 'https://covers.openlibrary.org/b/id/8225265-L.jpg',
+    spineColor: '#b33939',
     pageColor: '#f5f5f0',
     createdAt: Date.now() - 86400000 * 5,
   },
@@ -155,12 +155,14 @@ export function useBooks() {
 
 function generateSpineColor(): string {
   const colors = [
+    '#2d3436', '#636e72', '#b2bec3', '#dfe6e9',
     '#1a1a2e', '#16213e', '#0f3460', '#533483',
     '#2d132c', '#801336', '#c72c41', '#ee4540',
     '#1b262c', '#0f4c75', '#3282b8', '#bbe1fa',
     '#2c3e50', '#34495e', '#7f8c8d', '#95a5a6',
     '#8e44ad', '#9b59b6', '#3498db', '#2980b9',
     '#16a085', '#27ae60', '#2ecc71', '#1abc9c',
+    '#d63031', '#74b9ff', '#a29bfe', '#fd79a8',
   ];
   return colors[Math.floor(Math.random() * colors.length)];
 }
